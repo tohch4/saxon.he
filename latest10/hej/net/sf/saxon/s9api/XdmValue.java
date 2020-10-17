@@ -250,7 +250,7 @@ public class XdmValue implements Iterable<XdmItem> {
      *                                    evaluation fails with a dynamic error.
      */
     @Override
-    public Iterator<XdmItem> iterator() throws SaxonApiUncheckedException {
+    public XdmSequenceIterator<XdmItem> iterator() throws SaxonApiUncheckedException {
         try {
             Sequence v = getUnderlyingValue();
             return new XdmSequenceIterator<>(v.iterate());
