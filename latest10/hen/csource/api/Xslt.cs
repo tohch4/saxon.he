@@ -1222,7 +1222,7 @@ namespace Saxon.Api
     /// </remarks>
 
     [Serializable]
-    public class XsltTransformer : XdmDestination
+    public class XsltTransformer : XmlDestination
     {
 
         /* private JXsltController controller;
@@ -1571,6 +1571,10 @@ namespace Saxon.Api
             transformer.setParameter(net.sf.saxon.s9api.QName.fromEQName(name.EQName), net.sf.saxon.s9api.XdmValue.wrap(value.value));
         }
 
+        public JDestination GetUnderlyingDestination() {
+            return transformer;
+        }
+
 
 
         /// <summary>
@@ -1591,6 +1595,7 @@ namespace Saxon.Api
             set
             {
                 this.xmlDestination = value;
+                transformer.setDestination(value.GetUnderlyingDestination());
             }
 
         }
@@ -2816,22 +2821,7 @@ namespace Saxon.Api
             }
         }
 
-        internal class AbstractDestination : XmlDestination
-        {
-            private Xslt30Transformer xslt30Transformer;
-            private XmlDestination destination;
 
-			internal AbstractDestination(Xslt30Transformer xslt30Transformer, XmlDestination destination)
-            {
-                this.xslt30Transformer = xslt30Transformer;
-                this.destination = destination;
-            }
-
-			JDestination XmlDestination.GetUnderlyingDestination()
-            {
-                return xslt30Transformer.GetUnderlyingXslt30Transformer.asDocumentDestination(destination.GetUnderlyingDestination());
-            }
-        }
     }
 
     /// <summary> An <c>XsltPackage</c> object represents the result of compiling an XSLT 3.0 package, as

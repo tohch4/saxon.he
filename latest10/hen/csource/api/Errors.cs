@@ -25,7 +25,7 @@ namespace Saxon.Api
     public class StaticError : Exception
     {
 
-        internal XPathException exception;
+        private XPathException exception;
         internal bool isWarning;
 
         // internal constructor: Create a new StaticError, wrapping a Saxon XPathException
