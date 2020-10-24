@@ -17,8 +17,8 @@ import net.sf.saxon.om.TreeModel;
 import net.sf.saxon.s9api.*;
 import net.sf.saxon.trace.ExpressionPresenter;
 import net.sf.saxon.trans.LicenseException;
-import net.sf.saxon.trans.XmlProcessingIncident;
 import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.trans.XmlProcessingIncident;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static net.sf.saxon.s9api.streams.Predicates.*;
 import static net.sf.saxon.s9api.streams.Steps.*;
@@ -350,6 +351,8 @@ public class QT3TestDriverHE extends TestDriver {
         }
         env.xpathCompiler.setBackwardsCompatible(false);
         env.processor.setXmlVersion("1.0");
+        env.processor.setConfigurationProperty(Feature.XQUERY_MULTIPLE_MODULE_IMPORTS, true);
+
 
         List<XdmNode> dependencies = testCase.getParent().select(child("dependency")).asList();
         dependencies.addAll(testCase.select(child("dependency")).asList());
@@ -818,20 +821,45 @@ public class QT3TestDriverHE extends TestDriver {
 
         @Override
         public StreamSource[] resolve(String moduleURI, String baseURI, String[] locations) throws XPathException {
-            try {
-                XdmValue files = testCase.select(child("module").where(attributeEq("uri", moduleURI))
-                    .then(attribute("file")).then(atomize())).asXdmValue();
-                if (files.size() == 0) {
-                    throw new XPathException("Failed to find module entry for " + moduleURI);
+            if (locations.length == 0) {
+                try {
+                    XdmValue files = testCase.select(child("module").where(attributeEq("uri", moduleURI))
+                                                             .then(attribute("file")).then(atomize())).asXdmValue();
+                    if (files.size() == 0) {
+                        throw new XPathException("Failed to find module entry for " + moduleURI);
+                    }
+                    StreamSource[] ss = new StreamSource[files.size()];
+                    for (int i = 0; i < files.size(); i++) {
+                        URI uri = testCase.getBaseURI().resolve(files.itemAt(i).toString());
+                        ss[i] = getQuerySource(uri);
+                    }
+                    return ss;
+                } catch (SaxonApiUncheckedException e) {
+                    throw new XPathException(e);
                 }
-                StreamSource[] ss = new StreamSource[files.size()];
-                for (int i = 0; i < files.size(); i++) {
-                    URI uri = testCase.getBaseURI().resolve(files.itemAt(i).toString());
-                    ss[i] = getQuerySource(uri);
+            } else {
+                try {
+                    StreamSource[] ss = new StreamSource[locations.length];
+                    for (int i=0; i<locations.length; i++) {
+                        String loc = locations[i];
+                        URI hint = new URI(baseURI).resolve(loc);
+                        Predicate<XdmNode> matching = n ->
+                            n.attribute("uri").equals(moduleURI)
+                                    && n.attribute("location") != null
+                                    && testCase.getBaseURI().resolve(n.attribute("location")).equals(hint);
+
+                        XdmValue files = testCase.select(
+                                child("module").where(matching).then(attribute("file")).then(atomize())).asXdmValue();
+                        if (files.size() == 0) {
+                            throw new XPathException("Failed to find module entry for " + moduleURI + " at " + loc);
+                        }
+                        URI uri = testCase.getBaseURI().resolve(files.itemAt(0).toString());
+                        ss[i] = getQuerySource(uri);
+                    }
+                    return ss;
+                } catch (URISyntaxException e) {
+                    throw new XPathException(e);
                 }
-                return ss;
-            } catch (SaxonApiUncheckedException e) {
-                throw new XPathException(e);
             }
         }
     }
