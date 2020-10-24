@@ -153,14 +153,14 @@ public class UnboundFunctionLibrary implements FunctionLibrary {
                     ufc.setStaticType(fd.getResultType());
                 }
 
-                if (fd == null && importingModule.importsNamespace(q.getURI())) {
-                    XQueryFunctionBinder global = importingModule.getExecutable().getFunctionLibrary();
-                    fd = global.getDeclaration(q, arity);
-                    if (fd != null) {
-                        fd.registerReference(ufc);
-                        ufc.setStaticType(fd.getResultType());
-                    }
-                }
+//                if (fd == null && importingModule.importsNamespace(q.getURI())) {
+//                    XQueryFunctionBinder global = importingModule.getExecutable().getFunctionLibrary();
+//                    fd = global.getDeclaration(q, arity);
+//                    if (fd != null) {
+//                        fd.registerReference(ufc);
+//                        ufc.setStaticType(fd.getResultType());
+//                    }
+//                }
 
                 if (fd == null) {
                     StringBuilder sb = new StringBuilder("Cannot find a " + arity +

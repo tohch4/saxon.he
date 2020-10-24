@@ -174,6 +174,8 @@ public class XQueryParser extends XPathParser {
                 env.getConfiguration().checkLicensedFeature(Configuration.LicenseFeature.ENTERPRISE_XQUERY, "streaming", -1);
             }
 
+            exec.fixupQueryModules(mainModule);
+
             // Make the function library that's available at run-time (e.g. for saxon:evaluate() and function-lookup()).
             // This includes all user-defined functions regardless of which module they are in
 
@@ -187,8 +189,6 @@ public class XQueryParser extends XPathParser {
             config.addExtensionBinders(lib);
             lib.addFunctionLibrary(userlib);
             exec.setFunctionLibrary(lib);
-
-            exec.fixupQueryModules(mainModule);
 
             // Make the XQueryExpression object
 
