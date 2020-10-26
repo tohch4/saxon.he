@@ -561,7 +561,7 @@ public class ResultDocument extends Instruction
                     dest = result.getClass().getName();
                 }
             }
-            config.getStandardErrorOutput().println("Writing to " + dest);
+            config.getLogger().info("Writing to " + dest);
         }
     }
 

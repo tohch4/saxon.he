@@ -7,7 +7,10 @@
 
 package net.sf.saxon.lib;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.xml.transform.stream.StreamResult;
+import java.io.Writer;
 
 /**
  * Interface to diagnostic event logging mechanism.
@@ -100,10 +103,54 @@ public abstract class Logger {
     }
 
     /**
-     * Get a JAXP StreamResult object allowing serialized XML to be written to this Logger
+     * Get a {@link Writer} whose effect is to send each line of written output as
+     * a separate INFO message to this Logger
+     * @return a suitable {@code Writer}
+     */
+
+    public Writer asWriter() {
+        return new Writer() {
+            StringBuilder builder = new StringBuilder();
+
+            @Override
+            public void write(@NotNull char[] cbuf, int off, int len) {
+                for (int i = 0; i < len; i++) {
+                    char ch = cbuf[off + i];
+                    if (ch == '\n') {
+                        println(builder.toString(), INFO);
+                        builder.setLength(0);
+                    } else {
+                        builder.append(ch);
+                    }
+                }
+            }
+
+            @Override
+            public void flush() {
+                if (builder.length() > 0) {
+                    println(builder.toString(), INFO);
+                    builder.setLength(0);
+                }
+            }
+
+            @Override
+            public void close() {
+                flush();
+            }
+        };
+    }
+
+    /**
+     * Get a JAXP {@link StreamResult} object allowing serialized XML to be written to the
+     * output destination of this Logger. The default implementation returns a
+     * {@code StreamResult} wrapping a custom {@link Writer} that writes the supplied
+     * text line by line using the {@link #println(String, int)} method.
+     *
      * @return a StreamResult that serializes XML to this Logger
      */
 
-    public abstract StreamResult asStreamResult();
+    public StreamResult asStreamResult() {
+        return new StreamResult(asWriter());
+    }
 }
 

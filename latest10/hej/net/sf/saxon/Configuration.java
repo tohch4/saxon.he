@@ -927,24 +927,6 @@ public class Configuration implements SourceResolver, NotationSet {
     }
 
     /**
-     * Set the standard error output to be used in all cases where no more specific destination
-     * is defined. This defaults to System.err.
-     *
-     * @param out the stream to be used for error output where no more specific destination
-     *            has been supplied. The caller is responsible for closing this stream after use
-     *            (if necessary).
-     * @since 9.3
-     */
-
-    public void setStandardErrorOutput(PrintStream out) {
-        if (!(traceOutput instanceof StandardLogger)) {
-            traceOutput = new StandardLogger();
-        }
-        ((StandardLogger) traceOutput).setPrintStream(out);
-    }
-
-
-    /**
      * Register a new logger to be used in the Saxon event logging mechanism
      *
      * @param logger the Logger to be used as default. The caller is responsible for
@@ -957,13 +939,32 @@ public class Configuration implements SourceResolver, NotationSet {
         traceOutput = logger;
     }
 
+    /**
+     * Set the standard error output to be used in all cases where no more specific destination
+     * is defined. This defaults to System.err.
+     *
+     * <p>The method has no effect unless the {@link Configuration#getLogger()} object
+     * is an instance of {@link StandardLogger}. In that case it calls
+     * {@link StandardLogger#setPrintStream(PrintStream)}</p>
+     *
+     * @param out the stream to be used for error output where no more specific destination
+     *            has been supplied. The caller is responsible for closing this stream after use
+     *            (if necessary).
+     * @since 9.3
+     */
+
+    public void setStandardErrorOutput(PrintStream out) {
+        if (traceOutput instanceof StandardLogger) {
+            ((StandardLogger) traceOutput).setPrintStream(out);
+        }
+    }
 
     /**
      * Get the standard error output to be used in all cases where no more specific destination
      * is defined. This defaults to System.err.
      *
-     * @return the stream to be used for error output where no more specific destination
-     * has been supplied
+     * @return If the {@link Configuration#getLogger()} object is an instance of {@link StandardLogger},
+     * then the value of  {@link StandardLogger#getPrintStream()}; otherwise {@code System.err}.
      * @since 9.3
      */
 
@@ -971,10 +972,9 @@ public class Configuration implements SourceResolver, NotationSet {
         if (traceOutput instanceof StandardLogger) {
             return ((StandardLogger) traceOutput).getPrintStream();
         } else {
-            return null;
+            return System.err;
         }
     }
-
 
     /**
      * Set the XML version to be used by default for validating characters and names.

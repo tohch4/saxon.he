@@ -248,7 +248,7 @@ public abstract class Builder implements Receiver {
             if (sysId == null) {
                 sysId = "(unknown systemId)";
             }
-            getConfiguration().getStandardErrorOutput().println(
+            getConfiguration().getLogger().info(
                     "Building tree for " + sysId + " using " + getClass());
             startTime = System.nanoTime();
         }
@@ -259,7 +259,7 @@ public abstract class Builder implements Receiver {
     public void close() throws XPathException {
         if (timing && open) {
             long endTime = System.nanoTime();
-            getConfiguration().getStandardErrorOutput().println(
+            getConfiguration().getLogger().info(
                     "Tree built in " + CommandLineOptions.showExecutionTimeNano(endTime - startTime));
             if (currentRoot instanceof TinyDocumentImpl) {
                 ((TinyDocumentImpl) currentRoot).showSize();

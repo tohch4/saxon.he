@@ -400,7 +400,7 @@ public class XQueryEvaluator extends AbstractDestination implements Iterable<Xdm
             if (systemId == null) {
                 systemId = "";
             }
-            config.getStandardErrorOutput().println("Processing streamed input " + systemId);
+            config.getLogger().info("Processing streamed input " + systemId);
         }
         try {
             SerializationProperties params = expression.getExecutable().getPrimarySerializationProperties();

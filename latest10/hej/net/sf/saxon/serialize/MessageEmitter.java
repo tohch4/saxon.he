@@ -34,7 +34,7 @@ public class MessageEmitter extends XMLEmitter {
         super.setPipelineConfiguration(pipelineConfiguration);
         if (writer == null && outputStream == null) {
             try {
-                setOutputStream(getConfiguration().getStandardErrorOutput());
+                setWriter(getConfiguration().getLogger().asWriter());
             } catch (XPathException e) {
                 throw new AssertionError(e);
             }

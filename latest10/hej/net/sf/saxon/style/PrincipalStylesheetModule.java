@@ -1405,7 +1405,7 @@ public class PrincipalStylesheetModule extends StylesheetModule implements Globa
             if (compilation.getCompilerInfo().isGenerateByteCode() &&
                     !config.isDeferredByteCode(HostLanguage.XSLT)) {
                 if (Compilation.TIMING) {
-                    config.getStandardErrorOutput().println("Generating byte code...");
+                    config.getLogger().info("Generating byte code...");
                 }
 
                 Optimizer opt = config.obtainOptimizer();

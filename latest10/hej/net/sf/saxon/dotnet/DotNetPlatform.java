@@ -448,11 +448,11 @@ public class DotNetPlatform implements Platform {
                     RegistryKey regKey = base.OpenSubKey(path + edition + "-N\\Settings", false);
                     if (regKey != null) {
                         if (config.isTiming()) {
-                            config.getStandardErrorOutput().println("Found registry key at " + regKey.toString());
+                            config.getLogger().info("Found registry key at " + regKey.toString());
                         }
                         String installPath = (String) regKey.GetValue("InstallPath");
                         if (config.isTiming()) {
-                            config.getStandardErrorOutput().println("Software installation path: " + installPath);
+                            config.getLogger().info("Software installation path: " + installPath);
                         }
                         return installPath;
                     }
