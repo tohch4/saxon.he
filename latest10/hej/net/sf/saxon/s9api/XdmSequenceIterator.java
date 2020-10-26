@@ -30,6 +30,7 @@ import java.util.stream.StreamSupport;
  */
 public class XdmSequenceIterator<T extends XdmItem> implements Iterator<T> {
     private final LookaheadIterator base;
+    private boolean closed = false;
 
     protected XdmSequenceIterator(SequenceIterator base) {
         try {
@@ -68,7 +69,7 @@ public class XdmSequenceIterator<T extends XdmItem> implements Iterator<T> {
      */
     @Override
     public boolean hasNext() {
-        return base.hasNext();
+        return !closed && base.hasNext();
     }
 
     /**
@@ -114,6 +115,7 @@ public class XdmSequenceIterator<T extends XdmItem> implements Iterator<T> {
      */
 
     public void close() {
+        closed = true;
         base.close();
     }
 
@@ -127,8 +129,13 @@ public class XdmSequenceIterator<T extends XdmItem> implements Iterator<T> {
     public XdmStream<T> stream() {
         Stream<T> base = StreamSupport.stream(Spliterators.spliteratorUnknownSize(
                 this, Spliterator.ORDERED), false);
-        base = base.onClose(XdmSequenceIterator.this::close);
-        return new XdmStream<>(base);
+        base = base.onClose(new Runnable() {
+            @Override
+            public void run() {
+                XdmSequenceIterator.this.close();
+            }
+        });
+        return new XdmStream<T>(base);
     }
 
 }
