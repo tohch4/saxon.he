@@ -47,25 +47,25 @@ public class SaxonOutputKeys {
      * String constant representing the saxon:xquery output method name
      */
 
-    /*@NotNull*/ public static final String SAXON_XQUERY_METHOD = "{http://saxon.sf.net/}xquery";
+    /*@NotNull*/ public static final String SAXON_XQUERY_METHOD = "Q{http://saxon.sf.net/}xquery";
 
     /**
      * String constant representing the saxon:base64Binary output method name
      */
 
-    /*@NotNull*/ public static final String SAXON_BASE64_BINARY_METHOD = "{http://saxon.sf.net/}base64Binary";
+    /*@NotNull*/ public static final String SAXON_BASE64_BINARY_METHOD = "Q{http://saxon.sf.net/}base64Binary";
 
     /**
      * String constant representing the saxon:hexBinary output method name
      */
 
-    /*@NotNull*/ public static final String SAXON_HEX_BINARY_METHOD = "{http://saxon.sf.net/}hexBinary";
+    /*@NotNull*/ public static final String SAXON_HEX_BINARY_METHOD = "Q{http://saxon.sf.net/}hexBinary";
 
     /**
      * String constant representing the saxon:xml-to-json output method name
      */
 
-    /*@NotNull*/ public static final String SAXON_XML_TO_JSON_METHOD = "{http://saxon.sf.net/}xml-to-json";
+    /*@NotNull*/ public static final String SAXON_XML_TO_JSON_METHOD = "Q{http://saxon.sf.net/}xml-to-json";
 
     /**
      * allow-duplicate-names = yes|no.

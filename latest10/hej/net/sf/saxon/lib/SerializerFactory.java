@@ -306,7 +306,7 @@ public class SerializerFactory {
                     return customizeAdaptiveSerializer(je, props, characterMapExpander, normalizer);
                 }
                 default: {
-                    if (method.startsWith("{" + NamespaceConstant.SAXON + "}")) {
+                    if (method.startsWith("Q{" + NamespaceConstant.SAXON + "}")) {
                         CharacterMapExpander characterMapExpander = makeCharacterMapExpander(pipe, props, charMapIndex);
                         ProxyReceiver normalizer = makeUnicodeNormalizer(pipe, props);
                         target = createSaxonSerializationMethod(
