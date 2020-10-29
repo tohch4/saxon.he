@@ -40,7 +40,8 @@ public class StandardEntityResolver implements EntityResolver {
      * entity resolver
      *
      * @param publicId the public identifier of the DTD or entity
-     * @param systemId the system identifier of the DTD or entity
+     * @param systemId the system identifier of the DTD or entity. For domains that are known
+     *                 to redirect http: to https:, either scheme is accepted.
      * @param fileName the fileName of the Saxon local copy of the
      *                 resource, relative to the data directory in the JAR file
      */
@@ -54,6 +55,10 @@ public class StandardEntityResolver implements EntityResolver {
         }
         if (systemId != null) {
             systemIds.put(systemId, fileName);
+            if (systemId.startsWith("http://www.w3.org/")) {
+                String httpsId = "https://" + systemId.substring(7);
+                systemIds.put(httpsId, fileName);
+            }
         }
     }
 
