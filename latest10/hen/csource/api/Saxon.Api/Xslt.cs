@@ -708,6 +708,15 @@ namespace Saxon.Api
             get { return xsltCompiler.isFastCompilation(); }
         }
 
+
+        [Obsolete("This property has been replaced by FastCompilation.")]
+        public bool FastCompliation
+        {
+
+            set { xsltCompiler.setFastCompilation(value); }
+            get { return xsltCompiler.isFastCompilation(); }
+        }
+
         /// <summary>
 		/// Compile a stylesheet supplied as a <c>TextReader</c>.
         /// </summary>
