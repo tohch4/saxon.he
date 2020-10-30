@@ -702,7 +702,7 @@ namespace Saxon.Api
 		/// defined in the Configuration.</para>
 		/// </remarks>
 
-        public bool FastCompliation {
+        public bool FastCompilation {
 
             set { xsltCompiler.setFastCompilation(value); }
             get { return xsltCompiler.isFastCompilation(); }
