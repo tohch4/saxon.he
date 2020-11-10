@@ -55,7 +55,11 @@ public final class CastableExpression extends CastingExpression {
         Expression operand = getBaseExpression();
         ItemType sourceItemType = operand.getItemType();
 
-        AtomicType atomizedType = (AtomicType) sourceItemType.getAtomizedItemType().getPrimitiveItemType();
+        PlainType atomizedItemType = sourceItemType.getAtomizedItemType();
+        if (atomizedItemType == null) {
+            throw new XPathException("Operand of 'castable as' cannot be atomized", "XPTY0004");
+        }
+        AtomicType atomizedType = (AtomicType)atomizedItemType.getPrimitiveItemType();
         if (!(atomizedType == BuiltInAtomicType.ANY_ATOMIC)) {
             converter = visitor.getConfiguration().getConversionRules().getConverter(atomizedType, getTargetType());
             if (converter == null) {
