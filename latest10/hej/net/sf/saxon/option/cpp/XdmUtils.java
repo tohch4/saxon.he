@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2014-2020 Saxonica Limited
+// Copyright (c) 2014 Saxonica Limited.
 // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 // This Source Code Form is "Incompatible With Secondary Licenses", as defined by the Mozilla Public License, v. 2.0.
@@ -17,6 +17,7 @@ import net.sf.saxon.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * * This utility class consists generic functions for use with XDM data model.
@@ -45,41 +46,78 @@ public class XdmUtils {
 
     /**
      * Attempt to Downcast XdmItem to XdmNode. If this is not possible then return null
-     *
      */
-    public static XdmNode castToXdmNode(XdmItem item){
-        if(item instanceof XdmNode) {
-            return (XdmNode)item;
+    public static XdmNode castToXdmNode(XdmItem item) {
+        if (item instanceof XdmNode) {
+            return (XdmNode) item;
         }
         return null;
     }
 
-    public static String getPrimitiveTypeName(XdmAtomicValue value){
+    public static String getPrimitiveTypeName(XdmAtomicValue value) {
         return getEQName(value.getPrimitiveTypeName());
     }
 
+    public static String getFunctionName(XdmFunctionItem item) {
+        return getEQName(item.getName());
+    }
 
+    public static XdmFunctionItem getSystemFunction(Processor proc, String eqname, int arity) throws SaxonApiException {
+        return  XdmFunctionItem.getSystemFunction(proc, QName.fromClarkName(eqname), arity);
+    }
 
     /**
      * Attempt to Downcast XdmItem to XdmAtomicValue. If this is not possible then return null
-     *
      */
-    public static XdmAtomicValue castToXdmAtomicValue(XdmItem item){
-        if(item.isAtomicValue()) {
-            return (XdmAtomicValue)item;
+    public static XdmAtomicValue castToXdmAtomicValue(XdmItem item) {
+        if (item.isAtomicValue()) {
+            return (XdmAtomicValue) item;
         }
         return null;
     }
 
     /**
      * Attempt to Downcast XdmItem to XdmFunctionItem. If this is not possible then return null
-     *
      */
-    public static XdmFunctionItem castToXdmFunctionItem(XdmItem item){
-        if(item instanceof XdmFunctionItem) {
-            return (XdmFunctionItem)item;
+    public static XdmFunctionItem castToXdmFunctionItem(XdmItem item) {
+        if (item instanceof XdmFunctionItem) {
+            return (XdmFunctionItem) item;
         }
         return null;
+    }
+
+    public static XdmValue [] convertXdmArrayToArrayObject(XdmArray value) {
+        XdmValue arr [] = new XdmValue[value.arrayLength()];
+        value.asList().toArray(arr);
+        return arr;
+
+    }
+
+
+    public static XdmMap makeXdmMap(XdmAtomicValue [] keyArr, XdmValue [] valueArray) {
+        XdmMap map = new XdmMap();
+
+        for(int i=0; i< keyArr.length;i++){
+            map.put(keyArr[i], valueArray[i]);
+        }
+        return map;
+
+    }
+
+
+    public static XdmValue [] getXdmMapValues(XdmMap map) {
+
+        XdmValue [] arr = map.values().toArray(new XdmValue[0]);
+        return arr;
+
+    }
+
+
+    public static XdmAtomicValue [] getXdmMapKeys(XdmMap map) {
+
+        XdmAtomicValue [] arr = map.keySet().toArray(new XdmAtomicValue[0]);
+        return arr;
+
     }
 
     /**
@@ -109,13 +147,13 @@ public class XdmUtils {
 
     }
 
-  /*
-   * The expanded name, as a string using the notation devised by EQName.
-   * If the name is in a namespace, the resulting string takes the form <code>Q{uri}local</code>.
-   * Otherwise, the value is the local part of the name.
-   * @param qname
-   *
-   */
+    /*
+     * The expanded name, as a string using the notation devised by EQName.
+     * If the name is in a namespace, the resulting string takes the form <code>Q{uri}local</code>.
+     * Otherwise, the value is the local part of the name.
+     * @param qname
+     *
+     */
     public static String getEQName(QName qname) {
         String uri = qname.getNamespaceURI();
         if (uri.length() == 0) {
@@ -130,60 +168,56 @@ public class XdmUtils {
      *
      * @param node
      * @return the name of the node. In the case of unnamed nodes (for example, text and comment nodes)
-     *         return null.
+     * return null.
      */
     public static String getNodeName(XdmNode node) {
-          QName qname = node.getNodeName();
-          if(qname == null) {
-              return null;
-          }
-          return XdmUtils.getEQName(qname);
+        QName qname = node.getNodeName();
+        if (qname == null) {
+            return null;
+        }
+        return XdmUtils.getEQName(qname);
 
-    }
-
-    public XdmNode[] getChildNodes(){
-        return null;
     }
 
 
     /**
      * Get the string value of a named attribute of the element passed
      *
-     * @param  node the element in question
+     * @param node   the element in question
      * @param eqname the name of the required attribute
      * @return null if this node is not an element, or if this element has no
-     *         attribute with the specified name. Otherwise return the string value of the
-     *         selected attribute node.
+     * attribute with the specified name. Otherwise return the string value of the
+     * selected attribute node.
      */
-    public static String getAttributeValue(XdmNode node, String eqname){
+    public static String getAttributeValue(XdmNode node, String eqname) {
 
         QName name = QName.fromEQName(eqname);
         if (SaxonCAPI.debug) {
-          System.err.println("EQName= "+eqname);
-          System.err.println("Java-Call Att-name="+name.getClarkName() + " Value="+node.getAttributeValue(name));
+            System.err.println("EQName= " + eqname);
+            System.err.println("Java-Call Att-name=" + name.getClarkName() + " Value=" + node.getAttributeValue(name));
         }
         return node.getAttributeValue(name);
     }
 
-    public static XdmNode[] getAttributeNodes(XdmNode node){
-       List<XdmNode> children = new ArrayList<XdmNode>();
+    public static XdmNode[] getAttributeNodes(XdmNode node) {
+        List<XdmNode> children = new ArrayList<XdmNode>();
         XdmSequenceIterator iter = node.axisIterator(Axis.ATTRIBUTE);
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             children.add((XdmNode) iter.next());
         }
-        if(children.size() == 0 ){
+        if (children.size() == 0) {
             return null;
         }
         return children.toArray(new XdmNode[0]);
     }
 
-    public static XdmNode[] getChildren(XdmNode node){
+    public static XdmNode[] getChildren(XdmNode node) {
         List<XdmNode> children = new ArrayList<XdmNode>();
         XdmSequenceIterator iter = node.axisIterator(Axis.CHILD);
-        while(iter.hasNext()){
-            children.add((XdmNode)iter.next());
+        while (iter.hasNext()) {
+            children.add((XdmNode) iter.next());
         }
-        if(children.size() == 0 ){
+        if (children.size() == 0) {
             return null;
         }
         return children.toArray(new XdmNode[0]);
@@ -192,7 +226,7 @@ public class XdmUtils {
     public static int getChildCount(XdmNode node) {
         int num = 0;
         XdmSequenceIterator iter = node.axisIterator(Axis.CHILD);
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             iter.next();
             num++;
         }
@@ -203,7 +237,7 @@ public class XdmUtils {
     public static int getAttributeCount(XdmNode node) {
         int num = 0;
         XdmSequenceIterator iter = node.axisIterator(Axis.ATTRIBUTE);
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             iter.next();
             num++;
         }

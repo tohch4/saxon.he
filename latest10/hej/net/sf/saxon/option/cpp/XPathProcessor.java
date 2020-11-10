@@ -1,16 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2020 Saxonica Limited
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-// This Source Code Form is "Incompatible With Secondary Licenses", as defined by the Mozilla Public License, v. 2.0.
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 package net.sf.saxon.option.cpp;
 
 import com.saxonica.functions.extfn.cpp.CPPFunctionSet;
 import com.saxonica.functions.extfn.cpp.PHPFunctionSet;
 import net.sf.saxon.Configuration;
-import net.sf.saxon.om.SequenceTool;
 import net.sf.saxon.s9api.*;
 
 import javax.xml.transform.Source;
@@ -32,11 +24,13 @@ public class XPathProcessor extends SaxonCAPI {
     public XPathProcessor() {
         super();
         compiler = processor.newXPathCompiler();
+        compiler.setAllowUndeclaredVariables(true);
     }
 
     public XPathProcessor(boolean l) {
         super(l);
         compiler = processor.newXPathCompiler();
+        compiler.setAllowUndeclaredVariables(true);
         Configuration config = processor.getUnderlyingConfiguration();
 //#if EE==true || PE==true
         if(config.isLicensedFeature(Configuration.LicenseFeature.PROFESSIONAL_EDITION)) {
@@ -49,6 +43,7 @@ public class XPathProcessor extends SaxonCAPI {
     public XPathProcessor(Processor proc) {
         super(proc);
         compiler = processor.newXPathCompiler();
+        compiler.setAllowUndeclaredVariables(true);
         Configuration config = processor.getUnderlyingConfiguration();
 //#if EE==true || PE==true
         if(config.isLicensedFeature(Configuration.LicenseFeature.PROFESSIONAL_EDITION)) {
@@ -56,6 +51,14 @@ public class XPathProcessor extends SaxonCAPI {
             config.getBuiltInExtensionLibraryList().addFunctionLibrary(CPPFunctionSet.getInstance());
         }
 //#endif
+    }
+
+    /**
+     * Get the XPath Compiler created for this XPath Processor
+     * @return XPathCompiler
+     */
+    public XPathCompiler getCompiler(){
+        return compiler;
     }
 
     /**
@@ -73,6 +76,11 @@ public class XPathProcessor extends SaxonCAPI {
     public void declareNamespace(String prefix, String uri) {
         compiler.declareNamespace(prefix, uri);
     }
+
+
+    /* TODO public void declareVariable(String qname, ItemType itemType, OccurrenceIndicator occurrences) {
+        compiler.declareVariable(QName.fromClarkName(qname));
+    } */
 
     /**
      * Set whether XPath 1.0 backwards compatibility mode is to be used. In backwards compatibility
@@ -103,8 +111,7 @@ public class XPathProcessor extends SaxonCAPI {
             uri = new URI(uriStr);
             compiler.setBaseURI(uri);
         } catch (URISyntaxException e) {
-            SaxonCException ex = new SaxonCException(e);
-            saxonExceptions.add(ex);
+            SaxonApiException ex = new SaxonApiException(e);
             throw ex;
         }
 
@@ -118,15 +125,14 @@ public class XPathProcessor extends SaxonCAPI {
     public void setProperties(String[] params, Object[] values) throws SaxonApiException {
         if (selector != null) {
             try {
-                applyXPathProperties(this, "", processor, selector, params, values);
+                Map<QName, XdmValue> parameters = new HashMap<>();
+                Map<String, Object> map = setupConfigurationAndBuildMap(params, values, null, parameters, null, null, null, false);
+                applyXPathProperties(this, "", processor, selector, map, parameters);
             } catch (SaxonApiException e) {
-                SaxonCException ex = new SaxonCException(e);
-                saxonExceptions.add(ex);
-                throw ex;
+                throw e;
             }
         } else {
-            SaxonCException ex = new SaxonCException("XPathExecutable not created");
-            saxonExceptions.add(ex);
+            SaxonApiException ex = new SaxonApiException("XPathExecutable not created");
             throw ex;
 
         }
@@ -136,7 +142,6 @@ public class XPathProcessor extends SaxonCAPI {
     public void reset() {
         compiler = null;
         selector = null;
-        clearExceptions();
     }
 
 
@@ -156,9 +161,13 @@ public class XPathProcessor extends SaxonCAPI {
                 System.err.println("xpathString: " + xpathStr);
             }
         }
+        Map<QName, XdmValue> parameters = new HashMap<>();
+        Map<String, Object> optionsMap = setupConfigurationAndBuildMap(params, values, null, parameters, null, null, null, false);
+        setupXPathCompiler(optionsMap);
         compiler.setSchemaAware(schemaAware);
+
         selector = compiler.compile(xpathStr).load();
-        applyXPathProperties(this, cwd, processor, selector, params, values);
+        applyXPathProperties(this, cwd, processor, selector, optionsMap, parameters);
         if (contextItem != null) {
             selector.setContextItem(contextItem);
         }
@@ -174,6 +183,42 @@ public class XPathProcessor extends SaxonCAPI {
         }
         return xdmValues;
 
+    }
+
+    private void setupXPathCompiler(Map<String, Object> parameterMap) {
+        Object valuei = null;
+        if(parameterMap.containsKey("caching:")){
+            valuei = parameterMap.get("caching");
+            if(valuei instanceof Boolean) {
+                compiler.setCaching((Boolean)valuei);
+            } if (valuei instanceof String && (valuei.equals("yes") || valuei.equals("true"))) {
+                compiler.setCaching(true);
+            }
+
+        }
+
+        /*if(parameterMap.containsKey("allowUVar:")){
+            compiler.setAllowUndeclaredVariables(true);
+        }  */
+
+        if(parameterMap.containsKey("importSN:")){
+            valuei = parameterMap.get("importSN:");
+            if(valuei != null && valuei instanceof String) {
+                compiler.importSchemaNamespace((String)valuei);
+
+            }
+
+        }
+
+        if(parameterMap.containsKey("backwardsCom:")) {
+            compiler.setBackwardsCompatible(true);
+        }
+
+        /*if(!variables.isEmpty()) {
+            for(QName name : variables) {
+                compiler.declareVariable(name);
+            }
+        } */
     }
 
 
@@ -193,8 +238,11 @@ public class XPathProcessor extends SaxonCAPI {
                 System.err.println("xpathString: " + xpathStr);
             }
         }
+        Map<QName, XdmValue> parameters = new HashMap<>();
+        Map<String, Object> optionsMap = setupConfigurationAndBuildMap(params, values, null, parameters, null, null, null, false);
+        setupXPathCompiler(optionsMap);
         selector = compiler.compile(xpathStr).load();
-        applyXPathProperties(this, cwd, processor, selector, params, values);
+        applyXPathProperties(this, cwd, processor, selector, optionsMap, parameters);
         if (contextItem != null) {
             selector.setContextItem(contextItem);
         }
@@ -212,14 +260,16 @@ public class XPathProcessor extends SaxonCAPI {
      * @param values   -  The values for the parameters and properties required by the XPath expression
      **/
     public boolean effectiveBooleanValue(String cwd, String xpathStr, String[] params, Object[] values) throws SaxonApiException {
+
+        Map<QName, XdmValue> parameters = new HashMap<>();
+        Map<String, Object> optionsMap = setupConfigurationAndBuildMap(params, values, null, parameters, null, null, null, false);
+        setupXPathCompiler(optionsMap);
         selector = compiler.compile(xpathStr).load();
 
         try {
 
-            applyXPathProperties(this, cwd, processor, selector, params, values);
+            applyXPathProperties(this, cwd, processor, selector, optionsMap, parameters);
         } catch (SaxonApiException e) {
-            SaxonCException ex = new SaxonCException(e);
-            saxonExceptions.add(ex);
             throw e;
         }
 
@@ -230,8 +280,6 @@ public class XPathProcessor extends SaxonCAPI {
         try {
             result = selector.effectiveBooleanValue();
         } catch (SaxonApiException e) {
-            SaxonCException ex = new SaxonCException(e);
-            saxonExceptions.add(ex);
             throw e;
         }
         return result;
@@ -245,15 +293,13 @@ public class XPathProcessor extends SaxonCAPI {
      * In addition we can supply the source, stylesheet and output file names.
      * We can also supply values to xsl:param and xsl:variables required in the stylesheet.
      * The parameter names and values are supplied as a two arrays in the form of a key and value.
-     *
-     * @param cwd       - current working directory
+     *  @param cwd       - current working directory
      * @param processor - required to use the same processor as for the compiled stylesheet
      * @param selector  - compiled and loaded XPath expression ready for execution.
-     * @param params    - parameters and property names given as an array of stings
-     * @param values    - the values of the parameters and properties. given as a array of Java objects
+     * @param map
      */
-    public static void applyXPathProperties(SaxonCAPI api, String cwd, Processor processor, XPathSelector selector, String[] params, Object[] values) throws SaxonApiException {
-        if (params != null) {
+    public static void applyXPathProperties(SaxonCAPI api, String cwd, Processor processor, XPathSelector selector, Map<String, Object> map, Map<QName, XdmValue> parameters) throws SaxonApiException {
+        if (!map.isEmpty()) {
             String outputFilename = null;
             String initialTemplate = null;
             String initialMode = null;
@@ -261,83 +307,78 @@ public class XPathProcessor extends SaxonCAPI {
             String outfile = null;
             Source source = null;
             DocumentBuilder builder = processor.newDocumentBuilder();
-            Map<Serializer.Property, String> propsList = new HashMap<Serializer.Property, String>();
-            if (params.length != values.length) {
-                throw new SaxonApiException("Length of params array not equal to the length of values array");
-            }
-            if (params.length != 0) {
-                if (cwd != null && cwd.length() > 0) {
-                    if (!cwd.endsWith("/")) {
-                        cwd = cwd.concat("/");
-                    }
-                }
-                for (int i = 0; i < params.length; i++) {
-                    if (params[i].startsWith("!")) {
-                        String name = params[i].substring(1);
-                        Serializer.Property prop = Serializer.Property.get(name);
-                        if (prop == null) {
-                            throw new SaxonApiException("Property name " + name + " not found");
-                        }
-                        propsList.put(prop, (String) values[i]);
-                    } else if (params[i].equals("s")) {
-                        if (!(values[i] instanceof String)) {
-                            throw new SaxonApiException("Source file has incorrect type");
-                        }
-                        source = api.resolveFileToSource(cwd, (String) values[i]);
-                        ((XPathProcessor) api).setContextItem(builder.build(source));
-                    } else if (params[i].equals("item") || params[i].equals("node")) {
-                        Object value = values[i];
-                        if (value instanceof XdmItem) {
-                            item = (XdmItem) value;
-                            ((XPathProcessor) api).setContextItem(item);
-                        }
-                    } else if (params[i].equals("resources")) {
-                        char separatorChar = '/';
-                        if (SaxonCAPI.RESOURCES_DIR == null) {
-                            String dir1 = (String) values[i];
-                            if (!dir1.endsWith("/")) {
-                                dir1 = dir1.concat("/");
-                            }
-                            if (File.separatorChar != '/') {
-                                dir1.replace(separatorChar, File.separatorChar);
-                                separatorChar = '\\';
-                            }
-                            SaxonCAPI.RESOURCES_DIR = dir1;
-                        }
+            Object valuei = null;
 
-                    } else if (params[i].equals("extc")) {
-                        //extension function library path
-                        String libName = (String) values[i];
-                        SaxonCAPI.setLibrary("", libName);
-
-
-                    } else if (params[i].startsWith("param:")) {
-                        String paramName = params[i].substring(6);
-                        Object value = values[i];
-                        XdmValue xdmValue;
-                        if (value instanceof XdmValue) {
-                            xdmValue = (XdmValue) value;
-                            if (debug) {
-                                System.err.println("XSLTTransformerForCpp: " + paramName);
-                                System.err.println("XSLTTransformerForCpp: " + xdmValue.getUnderlyingValue().toString());
-                                net.sf.saxon.type.ItemType suppliedItemType = SequenceTool.getItemType(xdmValue.getUnderlyingValue(), processor.getUnderlyingConfiguration().getTypeHierarchy());
-                                System.err.println("XSLTTransformerForCpp: " + xdmValue.getUnderlyingValue());
-                                System.err.println("XSLTTransformerForCpp Type: " + suppliedItemType.toString());
-                            }
-
-
-                            QName qname = QName.fromClarkName(paramName);
-                            selector.setVariable(qname, xdmValue);
-                        }
-                    }
+            if (cwd != null && cwd.length() > 0) {
+                if (!cwd.endsWith("/")) {
+                    cwd = cwd.concat("/");
                 }
             }
-            if (api.serializer != null) {
-                for (Map.Entry pairi : propsList.entrySet()) {
-                    api.serializer.setOutputProperty((Serializer.Property) pairi.getKey(), (String) pairi.getValue());
+
+            if (map.containsKey("s")) {
+                valuei = map.get("s");
+                if (!(valuei instanceof String)) {
+                    throw new SaxonApiException("Source file has incorrect type");
                 }
+                source = api.resolveFileToSource(cwd, (String) valuei);
+                ((XPathProcessor) api).setContextItem(builder.build(source));
+            }
+
+            if (map.containsKey("item")) {
+                valuei = map.get("item");
+                if (valuei instanceof XdmItem) {
+                    item = (XdmItem) valuei;
+                    ((XPathProcessor) api).setContextItem(item);
+                }
+
+            } else if (map.containsKey("node")) {
+                valuei = map.get("node");
+                if (valuei instanceof XdmItem) {
+                    if (debug && valuei != null) {
+                        System.err.println("DEBUG: Type of value=" + (valuei).getClass().getName());
+
+                    }
+                }
+                item = (XdmItem) valuei;
+                ((XPathProcessor) api).setContextItem(item);
+
+            }
+
+
+            if (map.containsKey("resources")) {
+                valuei = map.get("resources");
+
+                char separatorChar = '/';
+                if (SaxonCAPI.RESOURCES_DIR == null) {
+                    String dir1 = (String) valuei;
+                    if (!dir1.endsWith("/")) {
+                        dir1 = dir1.concat("/");
+                    }
+                    if (File.separatorChar != '/') {
+                        dir1.replace(separatorChar, File.separatorChar);
+                        separatorChar = '\\';
+                    }
+                    SaxonCAPI.RESOURCES_DIR = dir1;
+                }
+
+            }
+
+            if (map.containsKey("extc")) {
+                //extension function library path
+                String libName = (String) map.get("extc");
+                SaxonCAPI.setLibrary("", libName);
+
+
             }
         }
+         if (!parameters.isEmpty()){
+             Map<QName, XdmValue> variables = parameters;
+             for(Map.Entry<QName, XdmValue> entry: variables.entrySet()){
+                 selector.setVariable(entry.getKey(), entry.getValue());
+
+             }
+         }
+
 
     }
 
@@ -347,7 +388,8 @@ public class XPathProcessor extends SaxonCAPI {
         int num = Integer.parseInt("123", 5);
         System.out.println("Xxxxxxx= " + num);
 
-        XPathProcessor xpath = new XPathProcessor(true);
+        XPathProcessor xpath = new XPathProcessor(false);
+        System.out.println("Version: " + SaxonCAPI.getProductVersion(xpath.processor));
         String sourcefile1 = "kamervragen.xml";
         String[] params1 = {"s"};
         Object[] values1 = {sourcefile1};
@@ -363,9 +405,15 @@ public class XPathProcessor extends SaxonCAPI {
         XdmNode node2 = xpath.parseXmlFile("/Users/ond1/work/development/svn/test", "books.xml");
         XdmNode[] children1 = XdmUtils.getChildren(XdmUtils.getChildren(node)[0]);
         // xpath.setContextItem(node);
-        String[] params2 = {"node"};
-        Object[] values2 = {node};
         Object[] values3 = {node2};
+        String[] params2 = {"node",  };
+        Object[] values2 = {node};
+
+        String[] params4 = {"param:s1"};
+        Object[] values4 = {"text in var"};
+
+        String[] params5 = {"param:s1"};
+        Object[] values5 = {"10"};
         XdmValue value = xpath.evaluateSingle("/Users/ond1/work/development/tests/jeroen/xml/", "//person[1]", params2, values2);
         if (value instanceof XdmNode) {
             String nodename = XdmUtils.getEQName(((XdmNode) value).getNodeName());
@@ -395,6 +443,12 @@ public class XPathProcessor extends SaxonCAPI {
 
         }
 
+        XdmValue[] value3 = xpath.evaluate("/Users/ond1/work/development/svn/test", "$s1", params4, values4);
+        XdmValue[] value4 = xpath.evaluate("/Users/ond1/work/development/svn/test", "$s1", params5, values5);
+        if(value3.length>0 && value4.length>0) {
+            System.out.println("Value of parameter = "+ XdmUtils.getStringValue(value3[0]));
+            System.out.println("Value of parameter = "+ XdmUtils.getStringValue(value4[0]));
+        }
     }
 
 

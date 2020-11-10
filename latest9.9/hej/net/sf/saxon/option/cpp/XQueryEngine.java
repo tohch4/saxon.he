@@ -10,8 +10,12 @@ package net.sf.saxon.option.cpp;
 import com.saxonica.functions.extfn.cpp.CPPFunctionSet;
 import com.saxonica.functions.extfn.cpp.PHPFunctionSet;
 import net.sf.saxon.Configuration;
+import net.sf.saxon.om.SequenceTool;
+import net.sf.saxon.query.QueryResult;
 import net.sf.saxon.s9api.*;
+import net.sf.saxon.trans.XPathException;
 
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -28,13 +32,18 @@ import java.util.Properties;
 public class XQueryEngine extends SaxonCAPI {
 
     private XQueryExecutable executable = null;
+    private File queryFile = null;
+    private XQueryCompiler compiler = null;
+
+    private boolean serializerSet = false;
 
     /**
      * Default Constructor to initialise XQueryEngine. s9api Processor is created with license flag as false
      */
     public XQueryEngine() {
         super(false);
-
+        compiler = processor.newXQueryCompiler();
+        compiler.setErrorListener(errorListener);
     }
 
     /**
@@ -44,10 +53,12 @@ public class XQueryEngine extends SaxonCAPI {
      */
     public XQueryEngine(boolean license) {
         super(license);
+        compiler = processor.newXQueryCompiler();
+        compiler.setErrorListener(errorListener);
         Configuration config = processor.getUnderlyingConfiguration();
         schemaAware = config.isLicensedFeature(Configuration.LicenseFeature.ENTERPRISE_XSLT);
 //#if EE==true || PE==true
-        if (config.isLicensedFeature(Configuration.LicenseFeature.PROFESSIONAL_EDITION)) {
+        if(config.isLicensedFeature(Configuration.LicenseFeature.PROFESSIONAL_EDITION)) {
             config.getBuiltInExtensionLibraryList().addFunctionLibrary(PHPFunctionSet.getInstance());
             config.getBuiltInExtensionLibraryList().addFunctionLibrary(CPPFunctionSet.getInstance());
         }
@@ -61,10 +72,12 @@ public class XQueryEngine extends SaxonCAPI {
      */
     public XQueryEngine(Processor proc) {
         super(proc);
+        compiler = processor.newXQueryCompiler();
+        compiler.setErrorListener(errorListener);
         Configuration config = processor.getUnderlyingConfiguration();
         schemaAware = config.isLicensedFeature(Configuration.LicenseFeature.ENTERPRISE_XSLT);
 //#if EE==true || PE==true
-        if (config.isLicensedFeature(Configuration.LicenseFeature.PROFESSIONAL_EDITION)) {
+        if(config.isLicensedFeature(Configuration.LicenseFeature.PROFESSIONAL_EDITION)) {
             config.getBuiltInExtensionLibraryList().addFunctionLibrary(PHPFunctionSet.getInstance());
             config.getBuiltInExtensionLibraryList().addFunctionLibrary(CPPFunctionSet.getInstance());
         }
@@ -73,123 +86,62 @@ public class XQueryEngine extends SaxonCAPI {
 
     public XdmNode parseXMLString(String xml) throws SaxonApiException {
         try {
-            return SaxonCAPI.parseXmlString(null, processor, null, xml);
+            return SaxonCAPI.parseXmlString(processor, null, xml);
         } catch (SaxonApiException ex) {
+            saxonExceptions.add(new SaxonCException(ex));
             throw ex;
         }
     }
 
+    public void setXQueryFile(String queryFileName) {
+        queryFile = new File(queryFileName);
+    }
 
 
+    /**
+     * Declare a namespace binding as part of the static context for queries compiled using this
+     * XQueryCompiler. This binding may be overridden by a binding that appears in the query prolog.
+     * The namespace binding will form part of the static context of the query, but it will not be copied
+     * into result trees unless the prefix is actually used in an element or attribute name.
+     *
+     * @param prefix The namespace prefix. If the value is a zero-length string, this method sets the default
+     *               namespace for elements and types.
+     * @param uri    The namespace URI. It is possible to specify a zero-length string to "undeclare" a namespace;
+     *               in this case the prefix will not be available for use, except in the case where the prefix
+     *               is also a zero length string, in which case the absence of a prefix implies that the name
+     *               is in no namespace.
+     * @throws NullPointerException if either the prefix or uri is null.
+     */
+    public void declareNamespace(String prefix, String uri) {
+        compiler.declareNamespace(prefix, uri);
+    }
 
 
-    Map<String, Object> convertArraysToMap(XQueryCompiler compiler, Serializer serializer, String[] params, Object[] values, Map<QName, XdmValue> parameters, Properties props) throws SaxonApiException {
-            Map<String, Object> map = new HashMap();
+    public XQueryEvaluator xqueryEvaluator(String cwd, String[] params, Object[] values) throws SaxonApiException {
+        clearExceptions();
 
-            if (params == null || values == null) {
-                return map;
-            }
-            if (params.length != values.length) {
-                throw new SaxonApiException("Saxon/C internal Error: params array length does not match values length");
-            }
-            for (int i = 0; i < params.length; i++) {
-                if (params[i].startsWith("!")) {
-                    String name = params[i].substring(1);
-                    Serializer.Property prop = Serializer.Property.get(name);
-                    if (prop == null) {
-                        throw new SaxonApiException("Property name " + name + " not found");
-                    }
-                    props.put(prop.getQName().getClarkName(),  values[i]);
-                } else if (params[i].startsWith("--") && values[i] != null) {
-                    try {
-                        processor.setConfigurationProperty("http://saxon.sf.net/feature/" + params[i].substring(2), (String) values[i]);
-                    } catch (IllegalArgumentException err) {
-                        throw new SaxonApiException(err.getMessage());
-                    }
-                } else if (params[i].equals("sa")) {
-                    String value = ((String)values[i]).toLowerCase();
-                    if(value.equals("true") || value.equals("on")) {
-                        schemaAware = true;
-                    } else {
-                        schemaAware = false;
-                    }
-
-                } else if (params[i].equals("base")) {
-                    String baseURI = (String) values[i];
-                    try {
-                        compiler.setBaseURI(new URI(baseURI));
-                    } catch (URISyntaxException e) {
-                        SaxonApiException ex = new SaxonApiException(e);
-                        throw ex;
-                                    }
-                } else if (params[i].startsWith("ns-prefix:")) {
-                    String prefix = params[i].substring(10);
-                    String namespace = null;
-                    if(values[i] instanceof String) {
-                        namespace = (String) values[i];
-                    } else {
-                        throw new SaxonApiException("XQuery declare-namespace error: namespace is not a String value");
-                    }
-                    compiler.declareNamespace(prefix, namespace);
-
-                } else if (params[i].startsWith("param:")) {
-                    String paramName = params[i].substring(6);
-                    Object value = values[i];
-                    XdmValue valueForCpp = null;
-                    QName qname = QName.fromClarkName(paramName);
-                    valueForCpp = convertObjectToXdmValue(values[i]);
-                    if (debug) {
-                        System.err.println("DEBUG: SaxonCAPI param: " + paramName);
-                    }
-
-                    if (qname != null && valueForCpp != null) {
-                            if(parameters != null) {
-                                parameters.put(qname, valueForCpp);
-
-                            }
-                        }
-
-                }else {
-                    if (debug) {
-                        System.err.println("DEBUG: SaxonCAPI: param-name: " +params[i] + ", type of Value= "+values[i].getClass().getName());
-                    }
-                    map.put(params[i], values[i]);
-                }
-            }
-            if(schemaAware) {
-                compiler.setSchemaAware(true);
-            }
-            return map;
-
-        }
-
-
-    public XQueryEvaluator xqueryEvaluator(String cwd, String[] params, Object[] values, Serializer serializer) throws SaxonApiException {
-        File queryFile = null;
-        XQueryCompiler compiler = processor.newXQueryCompiler();
-        Map<QName, XdmValue> parameters = new HashMap<>();
-        Properties props = new Properties();
-        Map<String, Object> optionsMap = convertArraysToMap(compiler, serializer, params, values, parameters, props);
-        //compiler.setErrorListener(errorListener);
         String query = null;
         if (params != null && params.length != values.length) {
             SaxonCException ex = new SaxonCException("Length of params array not equal to the length of values array");
+            saxonExceptions.add(ex);
             throw ex;
         }
 
+        compiler.setSchemaAware(schemaAware);
 
         if (params != null && params.length != 0) {
-                if (optionsMap.containsKey("qs")) {
-                    query = (String) optionsMap.get("qs");
+            for (int i = 0; i < params.length; i++) {
+                if (params[i].equals("qs")) {
+                    query = (String) values[i];
                     executable = compiler.compile(query);
-                } else if (optionsMap.containsKey("q")) {
+                } else if (params[i].equals("q")) {
                     if (cwd != null && cwd.length() > 0 && cwd.startsWith("http")) {
                         URI cwdURI = null;
                         if (!cwd.endsWith("/")) {
                             cwd = cwd.concat("/");
                         }
                         try {
-                            cwdURI = new URI(cwd + (String) optionsMap.get("q"));
+                            cwdURI = new URI(cwd + (String) values[i]);
                             URL url = cwdURI.toURL();
                             InputStream in = url.openStream();
                             executable = compiler.compile(in);
@@ -203,157 +155,174 @@ public class XQueryEngine extends SaxonCAPI {
                         }
 
                     } else {
-                        queryFile = resolveFile(cwd, (String) optionsMap.get("q"));
+                        queryFile = resolveFile(cwd, (String) values[i]);
 
                         try {
                             executable = compiler.compile(queryFile);
                         } catch (IOException e) {
-                            SaxonApiException ex = new SaxonApiException(e);
+                            SaxonCException ex = new SaxonCException(e);
+                            saxonExceptions.add(ex);
                             throw ex;
                         }
                     }
+                } else if (params[i].equals("base")) {
+                    String baseURI = (String) values[i];
+                    try {
+                        compiler.setBaseURI(new URI(baseURI));
+                    } catch (URISyntaxException e) {
+                        SaxonCException ex = new SaxonCException(e);
+                        saxonExceptions.add(ex);
+                        throw ex;
+                    }
+                } else if (params[i].equals("sa") && !schemaAware) {
+                    compiler.setSchemaAware(true);
                 }
-            
+            }
         }
 
 
         if (query == null && queryFile == null) {
-            SaxonApiException ex = new SaxonApiException("No Query supplied");
+            SaxonCException ex = new SaxonCException("No Query supplied");
+            saxonExceptions.add(ex);
             throw ex;
         }
 
         XQueryEvaluator eval = executable.load();
-
         try {
-            applyXQueryProperties(this, cwd, serializer, processor, eval, optionsMap, parameters, props);
+            applyXQueryProperties(this, cwd, serializer, processor, eval, params, values);
         } catch (SaxonApiException ex) {
+            saxonExceptions.add(new SaxonCException(ex));
             throw ex;
         }
         return eval;
     }
 
 
-    public byte[] executeQueryToString(String cwd, String[] params, Object[] values) throws SaxonApiException {
+    public String executeQueryToString(String cwd, String[] params, Object[] values) throws SaxonApiException {
+        XQueryEvaluator eval = xqueryEvaluator(cwd, params, values);
 
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        Serializer serializer = processor.newSerializer(bStream);
-        XQueryEvaluator eval = xqueryEvaluator(cwd, params, values, serializer);
-        eval.run(serializer);
-        return bStream.toByteArray();
-
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.put("method", "xml");
+        props.put("indent","yes");
+        props.put("omit-xml-declaration","yes");
+        try {
+            QueryResult.serializeSequence(eval.evaluate().getUnderlyingValue().iterate(), processor.getUnderlyingConfiguration(), baos, props);
+        } catch (XPathException e) {
+            SaxonCException saxonException = new SaxonCException(e);
+            saxonExceptions.add(saxonException);
+            throw saxonException;
+        }
+        return baos.toString();
     }
 
     public XdmValue executeQueryToValue(String cwd, String[] params, Object[] values) throws SaxonApiException {
-        XQueryEvaluator eval = xqueryEvaluator(cwd, params, values, null);
+        XQueryEvaluator eval = xqueryEvaluator(cwd, params, values);
         return eval.evaluate();
     }
 
     public void executeQueryToFile(String cwd, String outFilename, String[] params, Object[] values) throws SaxonApiException {
         try {
-            Serializer serializer = resolveOutputFile(processor, cwd, outFilename);
-            XQueryEvaluator eval = xqueryEvaluator(cwd, params, values,  serializer);
+            XQueryEvaluator eval = xqueryEvaluator(cwd, params, values);
             if (outFilename != null) {
-
+                serializer = resolveOutputFile(processor, cwd, outFilename);
                 eval.run(serializer);
                 return;
             }
             eval.run();
         } catch (SaxonApiException ex) {
             SaxonCException saxonException = new SaxonCException(ex);
+            saxonExceptions.add(saxonException);
             throw ex;
 
         }
     }
 
-    public static void applyXQueryProperties(SaxonCAPI api, String cwd, Serializer serializer, Processor processor, XQueryEvaluator eval, Map<String, Object> optionsMap, Map<QName, XdmValue> parameters, Properties props) throws SaxonApiException {
+    public static void applyXQueryProperties(SaxonCAPI api, String cwd, Serializer serializer, Processor processor, XQueryEvaluator eval, String[] params, Object[] values) throws SaxonApiException {
 
         if (debug) {
-            for (Object key : optionsMap.keySet()) {
-                System.err.println((String)key);
+            for (int i = 0; i < params.length; i++) {
+                System.err.println("Param[" + i + "]:" + params[i]);
             }
         }
 
         XdmItem item = null;
+        String outfile = null;
         File sourceFile = null;
         Source source = null;
         DocumentBuilder builder = processor.newDocumentBuilder();
-        if (optionsMap.size() > 0) {
+        //Serializer serializer = processor.newSerializer();
+        if (params != null && params.length != 0) {
+            for (int i = 0; i < params.length; i++) {
+                if (params[i].equals("sa")) {
 
-                /*if (params[i].startsWith("!")) {
+
+                } else if (params[i].startsWith("!")) {
                     String name = params[i].substring(1);
-
-                    if(!(values[i] instanceof String)) {
-                        throw new SaxonApiException("Property with name " + name + " has value which is not a string");
-                    }
-
-
-                    Serializer.Property prop = Serializer.Property.get(name);
-                    if (prop == null) {
-                        System.err.println("Property name " + name + " not found");
-                        continue;
-
-                    }
-
-                    props.put(prop.getQName().getClarkName(), values[i]);
-                    if(serializer != null) {
-                        serializer.setOutputProperty(prop, (String) values[i]);
-                    }
-                } else */
-
-                if (optionsMap.containsKey("o")) {
-                    serializer = api.resolveOutputFile(processor, cwd, (String) optionsMap.get("o"));
+                    Serializer.Property prop = null;//Serializer.Property.get(name);
+                    serializer.setOutputProperty(prop, (String) values[i]);
+                } else if (params[i].equals("o") && outfile == null) {
+                    outfile = (String) values[i];
+                    serializer = api.resolveOutputFile(processor, cwd, outfile);
                     eval.setDestination(serializer);
-                } else if (optionsMap.containsKey("dtd")) {
-                    String option = (String) optionsMap.get("dtd");
+                } else if (params[i].equals("dtd")) {
+                    String option = (String) values[i];
                     if (option.equals("on")) {
                         builder.setDTDValidation(true);
                     } else {
                         builder.setDTDValidation(false);
                     }
 
-                } else if (optionsMap.containsKey("s")) {
-                    source = api.resolveFileToSource(cwd, (String) optionsMap.get("s"));
+                } else if (params[i].equals("s")) {
+                    source = api.resolveFileToSource(cwd, (String) values[i]);
                     eval.setSource(source);
 
-                } else if (optionsMap.containsKey("extc")) {
+                } else if (params[i].equals("extc")) {
                     //extension function library path
-                    String libName = (String) optionsMap.get("extc");
-                    SaxonCAPI.setLibrary(cwd, libName);
+                    String libName = (String) values[i];
+                    SaxonCAPI.setLibrary("", libName);
 
 
-                } else if (optionsMap.containsKey("item") ) {
-                    Object value = optionsMap.get("item");
+                } else if (params[i].equals("item") || params[i].equals("node")) {
+                    Object value = values[i];
                     if (value instanceof XdmItem) {
                         item = (XdmItem) value;
                     }
                     eval.setContextItem(item);
-                } else if (optionsMap.containsKey("node")) {
-                    Object value = optionsMap.get("node");
-                    if (value instanceof XdmItem) {
-                        item = (XdmItem) value;
-                    }
-                    eval.setContextItem(item);
-                }else if (optionsMap.containsKey("resources")) {
+                } else if (params[i].equals("resources")) {
                     if (SaxonCAPI.RESOURCES_DIR == null) {
-                        String dir1 = (String) optionsMap.get("resources");
+                        String dir1 = (String) values[i];
                         if (!dir1.endsWith("/")) {
                             dir1 = cwd.concat("/");
                         }
                         SaxonCAPI.RESOURCES_DIR = dir1;
                     }
 
-                }
+                } else if (params[i].startsWith("param:")) {
+                    String paramName = params[i].substring(6);
+                    Object value = values[i];
+                    XdmValue valueForCpp;
+                    if (value instanceof XdmValue) {
+                        valueForCpp = (XdmValue) value;
+                        if (debug) {
+                            System.err.println("XQuery localname: " + paramName);
+                            System.err.println("XQuery: " + valueForCpp.getUnderlyingValue().toString());
+                            net.sf.saxon.type.ItemType suppliedItemType = SequenceTool.getItemType(valueForCpp.getUnderlyingValue(), processor.getUnderlyingConfiguration().getTypeHierarchy());
+                            System.err.println("XQuery: " + valueForCpp.getUnderlyingValue());
+                            System.err.println("XQuery: " + suppliedItemType.toString());
+                        }
 
+                        QName qname = QName.fromClarkName(paramName);
+                        eval.setExternalVariable(qname, valueForCpp);
+                    }
+                }
             }
 
-        if (!props.isEmpty() && serializer != null) {
-            serializer.setOutputProperties(props);
-        }
+            if (sourceFile != null) {
+                eval.setSource(builder.build(sourceFile).asSource());
 
-        for(Map.Entry<QName, XdmValue> entry : parameters.entrySet()) {
-            eval.setExternalVariable(entry.getKey(), entry.getValue());
+            }
         }
-
 
 
     }
@@ -384,31 +353,18 @@ public class XQueryEngine extends SaxonCAPI {
 
 
         String[] params2 = {"node", "qs"};
-        String[] params3 = {"qs"};
-        String[] params4 = {"qs"};
         Object[] values2 = {doc, "saxon:line-number(/bookstore/book/title)"};
-        Object[] values3 = {"declare variable $n external := 10; (1 to $n)!(. * .)"};
-        Object[] value4 = {"declare namespace output = \"http://www.w3.org/2010/xslt-xquery-serialization\";\n" +
-                "\n" +
-                "declare option output:method 'json';\n" +
-                "\n" +
-                "map { 'prop1' : 'value 1', 'prop2' : 'value 2' }"};
         String cwd = "/Users/ond1/work/development/files/xmark";
         //String cwd = "C:///www///html///query";
         //String cwd = "http://localhost/query";
-        //xquery.executeQueryToFile(cwd, "output1a.xml", params1, values1);
-        String result0 = new String(xquery.executeQueryToString(cwd, params2, values2));
-        //String result2 = xquery.executeQueryToString(cwd, params1, values1);
-        XdmValue result = xquery.executeQueryToValue(cwd, params4, value4);
-
-        String result2 = new String(xquery.executeQueryToString(cwd, params4, value4));
+        xquery.executeQueryToFile(cwd, "output1a.xml", params1, values1);
+        String result = xquery.executeQueryToString(cwd, params2, values2);
+        String result2 = xquery.executeQueryToString(cwd, params1, values1);
 
 
         // xquery.executeQueryToFile("/home/ond1/test/saxon9-5-1-1source", outfile, params1, values1);
-        System.out.println("Result1=" + result.toString());
-
-        System.out.println("Result2=" + result2);
-        //System.out.println("Result2" + result2);
+        System.out.println("Result1=" + result);
+        System.out.println("Result2" + result2);
 
 
         QName qname = QName.XS_INTEGER;

@@ -52,8 +52,9 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
         schemaManager = processor.getSchemaManager();
 
         if (debug && !processor.isSchemaAware()) {
-            throw new SaxonCException("Processor is not licensed for schema processing!");
-            //saxonExceptions.add(ex);
+            SaxonCException ex = new SaxonCException("Processor is not licensed for schema processing!");
+            saxonExceptions.add(ex);
+            throw ex;
         }
     }
 
@@ -66,7 +67,8 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
         processor = proc;
         schemaManager = processor.getSchemaManager();
         if (!processor.isSchemaAware()) {
-            SaxonApiException ex = new SaxonApiException("Processor is not licensed for schema processing!");
+            SaxonCException ex = new SaxonCException("Processor is not licensed for schema processing!");
+            saxonExceptions.add(ex);
             throw ex;
         }
     }
@@ -362,7 +364,8 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
         setProperties(params, values);
 
         if (xsd == null) {
-            SaxonApiException ex = new SaxonApiException("Schema document not found");
+            SaxonCException ex = new SaxonCException("Schema document not found");
+            saxonExceptions.add(ex);
             throw ex;
         }
         Source source_xsd = resolveFileToSource(cwd, xsd);
@@ -387,7 +390,8 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
         setProperties(params, values);
 
         if (xsd == null) {
-            SaxonApiException ex = new SaxonApiException("Schema document not found");
+            SaxonCException ex = new SaxonCException("Schema document not found");
+            saxonExceptions.add(ex);
             throw ex;
         }
 
@@ -395,23 +399,6 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
         //validator.setErrorListener(errorListener);
 
         schemaManager.load(new StreamSource(new StringReader(xsd), systemId));
-
-
-    }
-
-
-    /**
-     * Export a precompiled Schema Component Model containing all the components (except built-in components)
-     * that have been loaded into this Processor.
-     * @param cwd The current working directory
-     * @param outputfile   The file name to which the SCM will be saved
-     * @throws SaxonApiException
-     */
-    public void exportSchema(String cwd, String outputfile) throws SaxonApiException {
-
-
-        Serializer serializer = resolveOutputFile(processor, cwd, outputfile);
-        schemaManager.exportComponents(serializer);
 
 
     }
@@ -432,7 +419,8 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
                         String xsdversion = (String) values[i];
                         getSchemaManager().setXsdVersion(xsdversion);
                     } else {
-                        SaxonApiException ex = new SaxonApiException("XSD version has not been correctly set");
+                        SaxonCException ex = new SaxonCException("XSD version has not been correctly set");
+                        saxonExceptions.add(ex);
                         throw ex;
                     }
                 }
@@ -454,7 +442,8 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
         source = null; //This is required to make sure the source object created from a previous call is not used
         SchemaValidator validator = null;
         if (!processor.isSchemaAware()) {
-            SaxonApiException ex = new SaxonApiException("Processor is not licensed for schema processing!");
+            SaxonCException ex = new SaxonCException("Processor is not licensed for schema processing!");
+            saxonExceptions.add(ex);
             throw ex;
         }
         reporting = false;
@@ -502,7 +491,8 @@ public class SchemaValidatorForCpp extends SaxonCAPI {
                 listener.endReporting();
             }
         } else {
-            SaxonApiException ex = new SaxonApiException("Source document not found");
+            SaxonCException ex = new SaxonCException("Source document not found");
+            saxonExceptions.add(ex);
             throw ex;
         }
 

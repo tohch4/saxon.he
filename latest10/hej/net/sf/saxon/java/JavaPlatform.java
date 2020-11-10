@@ -429,7 +429,7 @@ public class JavaPlatform implements Platform {
     }
 
 
-//#if EE==true
+//#if BYTECODE==true
 
     /**
      * Return the class loader required to load the bytecode generated classes
