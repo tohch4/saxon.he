@@ -344,10 +344,8 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
       <h2 class="subtitle">Prerequisites</h2>
 
       <p>Please have the following packages on your machine to build Saxon/C for the PHP language:
-            <code>make</code>, <code>php-devel</code>, (<code>php7.2-dev</code>),
-            <code>apache2</code> or <code>httpd</code>, <code>gcc-c++</code> or <code>g++</code>,
-            <code>gcj-jdk</code> (or just link the <code>jni.h</code> file in the
-            <code>Saxon.C.API</code> directory).</p>
+            <code>make</code>, <code>php-devel</code>, (<code>php7.X-dev</code>, tested on 7.1, 7.2 and 7.4),
+            <code>apache2</code> or <code>httpd</code>, <code>gcc-c++</code> or <code>g++</code>.</p>
 
       <p>Saxon/C should already have been installed following the instructions at <a
             href="../installing">Installing Saxon/C</a>.</p>
@@ -366,6 +364,11 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
       <p>To install, run the following commands:</p>
 
       <kbd>cd /usr/lib/Saxonica/Saxon-[EDITION]C[VERSION]/Saxon-C-API/</kbd>
+
+      <p>There is currently an outstanding bug in the Saxon/C 1.2 PHP extension (See bug issue <a href="https://saxonica.plan.io/issues/4371">#4371</a>)
+         which causes the browser to hang wen running a PHP script with Saxon/C code.
+         Please replace the file php7_saxon.cpp with the this patched verson: <a href="https://saxonica.plan.io/attachments/download/48989/php7_saxon.cpp">php7_saxon.cpp</a></p>
+      <br/>
       <kbd>phpize</kbd>
       <kbd>./configure --enable-saxon</kbd>
       <kbd>make</kbd>
@@ -379,7 +382,7 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
 
       <p>Next create a module conf file: </p>
 
-      <kbd>nano /etc/php/7.2/mods-available/20-saxon.ini</kbd>
+      <kbd>nano /etc/php/7.X/mods-available/20-saxon.ini</kbd>
 
       <p>with content:</p>
 
@@ -392,9 +395,11 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
 
       <p>Alternatively, you can update the <code>php.ini</code> file or add the
             <code>20-saxon.ini</code> file under the <code>conf.d</code> directory (if using Ubuntu
-         it is usually in the location <code>/etc/php/7.2/apache2/</code>) to contain the PHP
+         it is usually in the location <code>/etc/php/7.X/apache2/</code>) to contain the PHP
          extension. Insert the code <code>extension=saxon.so</code> in the Dynamic Extensions
          section, then run the following commands:</p>
+
+      <p>For some Linux distributions using php-fpm the file 20-saxon.ini should be installed within the directory <code>/etc/php.d</code></p>
 
       <kbd>sudo service apache2 restart</kbd>
       <kbd>php -m | grep saxon -i</kbd>
@@ -411,8 +416,13 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
          distribution: </p>
       <ul>
          <li>Ubuntu server: <code>/etc/apache2/envvars</code></li>
-         <li>Centos server: <code>/etc/sysconfig/httpd</code></li>
          <li>SUSE server: <code>/etc/sysconfig/apache2</code></li>
+         <li>Centos server (&lt; RHEL 7): <code>/etc/sysconfig/httpd</code></li>
+         <li>Centos server (&gt; RHEL 7): Update or create the file env.conf in the location <code>/etc/systemd/system/php-X.service.d/</code>
+            Add the followong content:
+         <br/><code>[Service]<br/>
+         Environment="SAXONC_HOME=/usr/lib”</code></li>
+
       </ul>
 
       <h2 class="subtitle">Installing on Windows</h2>
@@ -541,6 +551,13 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
                and PHP builds. Saxon/C can only run with 64-bit builds.</p>
             <p><b>Solution:</b> 
             The machine operating system must be 64-bit, and Python and PHP builds must be 64-bit to run with Saxon/C.</p>
+         </li>
+         <li>
+            <p>When building the Saxon/C PHP extension after calling <code>sudo make</code> we have had users report the following
+               error:</p>
+            <p><code>.libs/SchemaValidator.o: No such file or directory</code></p>
+            <p><b>Solution:</b>
+               Run the command <code>sudo make clean</code> followed by <code>sudo make</code> again seems to have resolved the issue.</p>
          </li>
       </ol>
 

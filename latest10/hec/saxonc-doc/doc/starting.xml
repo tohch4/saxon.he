@@ -32,7 +32,7 @@
          <h1>Installing on Linux</h1>
 
          <aside>In the following, [EDITION] means one of: HE, PE, EE; and [VERSION] is the
-            maintenance release version number (for instance 1.2.1). </aside>
+            maintenance release version number (for instance 1.3.0). </aside>
          
          <ol>
             <li>
@@ -70,7 +70,7 @@
                <kbd>sudo cp -r saxon-data /usr/lib/.</kbd>
             </li>
             <li>
-               <p><b>Set the SAXONC_HOME environmental variable</b></p>
+               <p><b>Set the SAXONC_HOME environment variable</b></p>
                <p>The SAXONC_HOME variable must be set to the location where the Saxon/C files have
                   been installed. For instance:</p>
                <kbd>export SAXONC_HOME=/usr/lib</kbd>
@@ -79,83 +79,9 @@
                   location.</p>
             </li>
          </ol>
-         
+
          <aside>The use of symbolic links to specify where the Saxon/C library is installed is no longer
             recommended. It is better to set the SAXONC_HOME environment variable directly.</aside>
-         
-         <!--TODO what about JET-home environment variable? If you use the same location as for saxon
-         library, as above, then it doesn't need to be set separately???
-            - similarly what about LD_LIBRARY_PATH ?-->
-         
-
-         <!--<ol>
-            <li>
-               <p>To install the Saxon-[EDITION]/C release, first unzip the file
-                  <code>libsaxon-[EDITION]C-setupv[VERSION].zip</code> and execute the
-                  command:</p>
-               <kbd>./libsaxon-[EDITION]C-setup-v[VERSION]</kbd>
-            </li>
-
-            <li>
-               <p>The next step is to select the destination where the product files will be
-                  installed. The product files are unpacked in the <code>Saxon-[EDITION]C</code>
-                  directory.</p>
-
-               <kbd>cd Saxonica/Saxon-[EDITION]C[VERSION]/</kbd>
-               <kbd>sudo cp libsaxon[EDITION].so /usr/lib/.</kbd>
-
-               <p>Alternatively you can either create a symbolic link to where the saxon library is
-                  installed so it can be found or use the SAXONC_HOME environment variable to set the location of the library. For example:</p>
-
-               <kbd>ln -s path/Saxonica/Saxon-[EDITION]C[VERSION]/libsaxon[EDITION].so
-                  /usr/lib/libsaxon[EDITION].so</kbd>
-
-               <p>Or</p>
-               <kbd>export SAXONC_HOME=path/Saxonica/Saxon-[EDITION]C[VERSION]</kbd>
-               <p>You may also need to set the LD_LIBRARY_PATH to the same location.</p>
-               
-            </li>
-
-            <li>
-               <p>You need to set up the environment for the JET JVM. The JVM is in the
-                     <code>Saxonica/Saxon-[EDITION]C[VERSION]/rt</code> directory.</p>
-
-               <kbd>sudo cp -r rt /usr/lib/.</kbd>
-
-               <p>Alternatively you can create a symbolic link to the JetVM library so it can be
-                  found. For example:</p>
-
-               <kbd>ln -s path/Saxonica/Saxon-[EDITION]C[VERSION]/rt /usr/lib/rt</kbd>
-            </li>
-
-            <li>
-               <p>Set the JET-home environment accordingly to where it is installed, e.g.
-                     <code>JET-home=/usr/lib/Saxon-[EDITION]C[VERSION]/rt</code>. The directory
-                     <code>JET-home/lib/amd64</code> must be listed in the
-                     <code>LD_LIBRARY_PATH</code> environment variable. For instance, if you are
-                  using a bash or Bourne shell, use the following command:</p>
-               <kbd style="word-wrap: break-word;">export JET_HOME=/usr/lib/rt</kbd>
-               <kbd style="word-wrap: break-word;">export
-                  LD_LIBRARY_PATH=$JET_HOME/lib/amd64/jetvm:$JET_HOME/lib/amd64:$LD_LIBRARY_PATH</kbd>
-
-               <p>Alternatively, for Ubuntu, you can create a file <code>/etc/ld.so.conf.d/jetvm.conf</code>
-                  with content:</p>
-
-               <samp><![CDATA[# JetVM env path (required for Saxon)
-      /usr/lib/rt/lib/amd64
-      /usr/lib/rt/lib/amd64/jetvm]]></samp>
-
-               <p>Next run: </p>
-               <kbd>sudo ldconfig</kbd>
-               <p>Ignore the message 'file /lib/libsaxon[EDITION].so is truncated'. The library was created using
-               Excelsior JET. The library is loaded from within the Saxon/C application and not in the usual way of shared libraries.</p>
-            </li>
-            
-            <li>
-               <p>You must also copy the <code>saxon-data</code> directory into the same directory
-                  as the <code>libsaxon[EDITION].so</code>.</p>
-            </li>
-         </ol>-->
 
          <p>Saxon/C is now installed, and ready to run. Please see <a href="../running">Running
                Saxon/C</a> to get started. Note that the commercial products Saxon-PE/C and
@@ -169,8 +95,8 @@
          <h1>Installing on Mac OS</h1>
 
          <aside>In the following, [EDITION] means one of: HE, PE, EE; and [VERSION] is the
-            maintenance release version number (for instance 1.2.1). </aside>
-         
+            maintenance release version number (for instance 1.3.0). </aside>
+
          <ol>
             <li>
                <p><b>Download</b></p>
@@ -191,21 +117,24 @@
                   <li><code>rt</code> directory - Excelsior JET runtime which handles VM calls</li>
                   <li><code>saxon-data</code> directory</li>
                </ul>
-               
+
                <p>On Mac OS, the expected install location is <code>/usr/local/lib</code>, and the following
                   commands use this default. If you choose to install to a different location, then
                   the SAXONC_HOME variable must be set accordingly (see the next step).</p>
-               
+
                <p>For instance, to copy the product files from the unpacked location
                   <code>Saxonica/Saxon-[EDITION]C-[VERSION]</code>, to <code>/usr/local/lib</code>:</p>
-               
+
                <kbd>cd Saxonica/Saxon-[EDITION]C-[VERSION]/</kbd>
                <kbd>sudo cp libsaxon[EDITION].dylib /usr/local/lib/.</kbd>
                <kbd>sudo cp -r rt /usr/local/lib/.</kbd>
                <kbd>sudo cp -r saxon-data /usr/local/lib/.</kbd>
+
+               <aside>If you encounter permission issues after copying, then the privileges of
+                  the folders and files may need adjusting.</aside>
             </li>
             <li>
-               <p><b>Set the SAXONC_HOME environmental variable</b></p>
+               <p><b>Set the SAXONC_HOME environment variable</b></p>
                <p>The SAXONC_HOME variable must be set to the location where the Saxon/C files have
                   been installed. For instance:</p>
                <kbd>export SAXONC_HOME=/usr/local/lib</kbd>
@@ -214,42 +143,6 @@
                   location.</p>
             </li>
          </ol>
-         
-         <!-- TODO Would it be useful to add the following back to step 3? 
-               "The privileges of the folders and files may need adjusting after copying everything
-               if you encounter permission issues." -->
-         
-         <!-- TODO Also note previously had info about setting DYLD_LIBRARY_PATH, is that still
-            necessary? -->
-
-         <!--<ol>
-            <li>
-               <p>To install any of the Saxon/C releases on the Mac OS system, first unzip the
-                  self-contained file <code>libsaxon-[EDITION]-mac-setup-v[VERSION].zip</code>.</p>
-            </li>
-
-            <li>
-               <p>The next step is to copy the <code>libsaxon[EDITION].dylib</code> library and the
-                     <code>rt</code> directories to your install location. The C/C++ interface by
-                  default assumes the library files and directories are installed in the
-                     <code>/usr/local/lib</code> directory. The location of the Saxon/C library can
-                  be set using the <code>SAXONC_HOME</code> environment variable. The privileges of
-                  the folders and files may need adjusting after copying everything if you encounter
-                  permission issues. Use for instance the following commands:</p>
-
-               <kbd>cd libsaxon-HEC-mac-setup-v[VERSION]/</kbd>
-               <kbd>sudo cp libsaxonhec.dylib /usr/local/lib/.</kbd>
-               <kbd>sudo cp -r rt /usr/local/lib/.</kbd>
-            </li>
-
-            <li>
-               <p>The <code>DYLD_LIBRARY_PATH</code> environment variable must be set as
-                  follows:</p>
-
-               <kbd>export JET_HOME=/usr/local/lib/rt</kbd>
-               <kbd>export DYLD_LIBRARY_PATH=$JET_HOME/lib/jetvm:$DYLD_LIBRARY_PATH</kbd>
-            </li>
-         </ol>-->
 
          <p>Saxon/C is now installed, and ready to run. Please see <a href="../running">Running
                Saxon/C</a> to get started. Note that the commercial products Saxon-PE/C and
@@ -262,8 +155,8 @@
          <h1>Installing on Windows</h1>
 
          <aside>In the following, [EDITION] means one of: HE, PE, EE; and [VERSION] is the
-            maintenance release version number (for instance 1.2.1). </aside>
-         
+            maintenance release version number (for instance 1.3.0). </aside>
+
          <ol>
             <li>
                <p><b>Download</b></p>
@@ -272,49 +165,32 @@
                   operating systems.</p>
             </li>
             <li>
-               <p><b>Unpack</b></p>
-               <p>To install the Saxon-[EDITION]/C release on Windows, first run the executable
-                  <code>libsaxon-[EDITION]-win-setup-v[VERSION].exe</code>.</p>
-               <p>This installation script unpacks the Saxon/C files in the <code>C:\Program
-                  Files\Saxonica\Saxon[EDITION][VERSION]</code> directory by default.</p>
-            </li>
-            <li>
-               <p><b>Choose the install location for the core Saxon/C installation files</b></p>
-               
-               <p>On Windows, the default and recommended location is <code>C:\Program
-                  Files\Saxonica\Saxon[EDITION][VERSION]</code>. This is the location that the
+               <p><b>Run the installation tool</b></p>
+               <p>To install the Saxon-[EDITION]/C release on Windows, run the installer executable
+                  <code>libsaxon-[EDITION]-win-setup-v[VERSION].exe</code>, and follow the installer
+                  steps.</p>
+
+               <p>During the installation process, you will be asked to <b>select the destination
+                  folder</b>, which is the directory in which the core Saxon/C files will be installed.
+                  The default and recommended location is <code>C:\Program
+                     Files\Saxonica\Saxon[EDITION][VERSION]</code>. This is the location that the
                   PHP extension looks for the Saxon/C DLL library, so we advise using this default
                   location.</p>
-               
+
                <p>If you choose to install to a different location, then the SAXONC_HOME variable
                   must be set accordingly (see the next step).</p>
-               
-               <!--<p>TODO: how does the user specify the installation destination?</p>
-               <p>Selected as a step in the installer executable???</p>-->
             </li>
             <li>
-               <p><b>Set SAXONC_HOME environmental variable</b></p>
+               <p><b>Set the SAXONC_HOME environment variable</b></p>
                <p>If the Saxon/C files were installed to a location other than the default
                   <code>C:\Program Files\Saxonica\Saxon[EDITION][VERSION]</code>, then the
                   SAXONC_HOME variable must be set to the correct location.</p>
-               <!--<p>TODO how?</p>-->
+               <p>On Windows, this can be done in various ways. The environment variable can be set
+                  from Window Settings &gt; System Properties &gt; Environment Variables; or from
+                  the command line using a set command like:</p>
+               <kbd>set SAXONC_HOME="C:\Program Files\Saxonica\Saxon[EDITION][VERSION]"</kbd>
             </li>
          </ol>
-
-         <!--<ol>
-            <li>
-               <p>To install the Saxon-[EDITION]/C release, first run the executable
-                     <code>libsaxon-[EDITION]-win-setup-v[VERSION].exe</code>.</p>
-            </li>
-
-            <li>
-               <p>The next step is to select the destination where the product files will be
-                  installed - the default and recommended location is <code>C:\Program
-                     Files\Saxonica\Saxon[EDITION][VERSION]</code>. This is the location that the
-                  PHP extension looks for the Saxon/C DLL library, so we advise using this default
-                  location. </p>
-            </li>
-         </ol>-->
 
          <p>Saxon/C is now installed, and ready to run. Please see <a href="../running">Running
                Saxon/C</a> to get started. Note that the commercial products Saxon-PE/C and
@@ -468,17 +344,15 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
       <h2 class="subtitle">Prerequisites</h2>
 
       <p>Please have the following packages on your machine to build Saxon/C for the PHP language:
-            <code>make</code>, <code>php-devel</code>, (<code>php7.2-dev</code>),
-            <code>apache2</code> or <code>httpd</code>, <code>gcc-c++</code> or <code>g++</code>,
-            <code>gcj-jdk</code> (or just link the <code>jni.h</code> file in the
-            <code>Saxon.C.API</code> directory).</p>
+            <code>make</code>, <code>php-devel</code>, (<code>php7.X-dev</code>, tested on 7.1, 7.2 and 7.4),
+            <code>apache2</code> or <code>httpd</code>, <code>gcc-c++</code> or <code>g++</code>.</p>
 
       <p>Saxon/C should already have been installed following the instructions at <a
             href="../installing">Installing Saxon/C</a>.</p>
 
       <h2 class="subtitle">Installing on Linux and Mac OS</h2>
 
-      <!--<p>(Alternatively, you may like to use the installation script <a 
+      <!--<p>(Alternatively, you may like to use the installation script <a
          href="https://saxonica.com/saxon-c/download/install.sh">install.sh</a> supplied by
          Petr Zak - written for a 64-bit machine, but can be changed for a 32-bit machine.)</p>-->
 
@@ -490,6 +364,7 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
       <p>To install, run the following commands:</p>
 
       <kbd>cd /usr/lib/Saxonica/Saxon-[EDITION]C[VERSION]/Saxon-C-API/</kbd>
+      
       <kbd>phpize</kbd>
       <kbd>./configure --enable-saxon</kbd>
       <kbd>make</kbd>
@@ -503,7 +378,7 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
 
       <p>Next create a module conf file: </p>
 
-      <kbd>nano /etc/php/7.2/mods-available/20-saxon.ini</kbd>
+      <kbd>nano /etc/php/7.X/mods-available/20-saxon.ini</kbd>
 
       <p>with content:</p>
 
@@ -516,9 +391,11 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
 
       <p>Alternatively, you can update the <code>php.ini</code> file or add the
             <code>20-saxon.ini</code> file under the <code>conf.d</code> directory (if using Ubuntu
-         it is usually in the location <code>/etc/php/7.2/apache2/</code>) to contain the PHP
+         it is usually in the location <code>/etc/php/7.X/apache2/</code>) to contain the PHP
          extension. Insert the code <code>extension=saxon.so</code> in the Dynamic Extensions
          section, then run the following commands:</p>
+
+      <p>For some Linux distributions using php-fpm the file 20-saxon.ini should be installed within the directory <code>/etc/php.d</code></p>
 
       <kbd>sudo service apache2 restart</kbd>
       <kbd>php -m | grep saxon -i</kbd>
@@ -535,8 +412,13 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
          distribution: </p>
       <ul>
          <li>Ubuntu server: <code>/etc/apache2/envvars</code></li>
-         <li>Centos server: <code>/etc/sysconfig/httpd</code></li>
          <li>SUSE server: <code>/etc/sysconfig/apache2</code></li>
+         <li>Centos server (&lt; RHEL 7): <code>/etc/sysconfig/httpd</code></li>
+         <li>Centos server (&gt; RHEL 7): Update or create the file env.conf in the location <code>/etc/systemd/system/php-X.service.d/</code>
+            Add the followong content:
+         <br/><code>[Service]<br/>
+         Environment="SAXONC_HOME=/usr/lib”</code></li>
+
       </ul>
 
       <h2 class="subtitle">Installing on Windows</h2>
@@ -663,8 +545,15 @@ $saxonProc->setConfigurationProperty("http://saxon.sf.net/feature/licenseFileLoc
             <p><code>Unable to load C:\Program Files\Saxonica\SaxonHEC1.2.1\libsaxonhec.dll Error: : No error</code></p>
             <p>Caused by attempting to run Saxon/C in 32-bit environments, including 32-bit Python
                and PHP builds. Saxon/C can only run with 64-bit builds.</p>
-            <p><b>Solution:</b> 
+            <p><b>Solution:</b>
             The machine operating system must be 64-bit, and Python and PHP builds must be 64-bit to run with Saxon/C.</p>
+         </li>
+         <li>
+            <p>When building the Saxon/C PHP extension after calling <code>sudo make</code> we have had users report the following
+               error:</p>
+            <p><code>.libs/SchemaValidator.o: No such file or directory</code></p>
+            <p><b>Solution:</b>
+               Run the command <code>sudo make clean</code> followed by <code>sudo make</code> again seems to have resolved the issue.</p>
          </li>
       </ol>
 
