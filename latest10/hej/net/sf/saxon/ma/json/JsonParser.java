@@ -200,7 +200,7 @@ public class JsonParser {
         JsonToken tok = tokenizer.next();
         while (tok != JsonToken.RCURLY) {
             if (tok != JsonToken.STRING_LITERAL && !(tok == JsonToken.UNQUOTED_STRING && liberal)) {
-                invalidJSON("Property name must be a string literal", ERR_GRAMMAR, tokenizer.lineNumber);
+                invalidJSON("Property name must be a string literal (found " + toString(tok, tokenizer.currentTokenValue.toString() + ")"), ERR_GRAMMAR, tokenizer.lineNumber);
             }
             String key = tokenizer.currentTokenValue.toString();
             key = unescape(key, flags, ERR_GRAMMAR, tokenizer.lineNumber);
@@ -471,7 +471,9 @@ public class JsonParser {
                 switch (c) {
                     case '\n':
                     case '\r':
-                        lineNumber++;
+                        if (!(c == '\n' && position > 0 && input.charAt(position-1) == '\r')) {
+                            lineNumber++;
+                        }
                         // drop through
                     case ' ':
                     case '\t':

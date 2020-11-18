@@ -208,10 +208,13 @@ public class JSONSerializer extends SequenceWriter implements ReceiverWithOutput
             return true;
         }
         for (KeyValuePair entry : map.keyValuePairs()) {
-            if (!(entry.value instanceof AtomicValue)) {
+            if (entry.value.getLength() == 0) {
+                totalSize += entry.key.getStringValueCS().length() + 6; // ": null"
+            } else if (entry.value instanceof AtomicValue) {
+                totalSize += entry.key.getStringValueCS().length() + ((AtomicValue) entry.value).getStringValueCS().length() + 4;
+            } else {
                 return false;
             }
-            totalSize += entry.key.getStringValueCS().length() + ((AtomicValue) entry.value).getStringValueCS().length() + 4;
             if (totalSize > maxLineLength) {
                 return false;
             }
