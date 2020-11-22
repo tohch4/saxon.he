@@ -1184,7 +1184,10 @@ public class TransformFn extends SystemFunction implements Callable {
         public Receiver resolve(XPathContext context, String href, String baseUri, SerializationProperties properties) throws XPathException {
             URI absolute = getAbsoluteUri(href, baseUri);
             RawDestination destination = new RawDestination();
-            destination.onClose(() -> results.put(absolute.toASCIIString(), destination.getXdmValue()));
+            destination.onClose(() -> {
+                destination.close();
+                results.put(absolute.toASCIIString(), destination.getXdmValue());
+            });
             PipelineConfiguration pipe = context.getController().makePipelineConfiguration();
             return destination.getReceiver(pipe, properties);
         }
