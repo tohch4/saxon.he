@@ -257,9 +257,6 @@ public class JSONEmitter {
             first = false;
         } else if (!afterKey) {
             emit(',');
-            if (!actuallyIndenting) {
-                emit(' ');
-            }
         }
         if ((wasFirst && afterKey)) {
             emit(' ');
