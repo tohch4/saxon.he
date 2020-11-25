@@ -402,6 +402,7 @@ public class ConfigurationReader implements ContentHandler, NamespaceResolver {
         applyProperty(props, "validationWarnings", Feature.VALIDATION_WARNINGS);
         applyProperty(props, "versionOfXml", Feature.XML_VERSION);
         applyProperty(props, "xInclude", Feature.XINCLUDE);
+        applyProperty(props, "zipUriPattern", Feature.ZIP_URI_PATTERN);
     }
 
     private void applyProperty(Properties props, String attributeName, Feature feature) {

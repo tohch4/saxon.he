@@ -270,9 +270,13 @@ public abstract class FeatureCode {
     public final static int RETAIN_NODE_FOR_DIAGNOSTICS = 125;
     /** @see Feature#ALLOW_UNRESOLVED_SCHEMA_COMPONENTS  */
     public final static int ALLOW_UNRESOLVED_SCHEMA_COMPONENTS = 126;
+    /**
+     * @see Feature#ZIP_URI_PATTERN
+     */
+    public final static int ZIP_URI_PATTERN = 127;
 
 
-    public final static int MAX = 127;
+    public final static int MAX = 128;
 
 }
         

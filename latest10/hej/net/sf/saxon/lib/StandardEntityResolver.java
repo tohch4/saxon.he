@@ -30,8 +30,8 @@ import java.util.Objects;
  */
 public class StandardEntityResolver implements EntityResolver {
 
-    private static HashMap<String, String> publicIds = new HashMap<>(30);
-    private static HashMap<String, String> systemIds = new HashMap<>(30);
+    private static HashMap<String, String> publicIds = new HashMap<>(150);
+    private static HashMap<String, String> systemIds = new HashMap<>(250);
 
     public Configuration config;
 
