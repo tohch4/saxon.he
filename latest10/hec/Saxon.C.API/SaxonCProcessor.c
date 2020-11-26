@@ -184,7 +184,7 @@ const char * xsltApplyStylesheet(sxnc_environment environi, sxnc_processor ** pr
 
 	
       if(result) {
-        const char * str = (*(environi.env))->GetStringUTFChars(environi.env, result, NULL);    
+        const char * str = (*(environi.env))->GetStringUTFChars(environi.env, result, NULL);
 	return str;
      }
 
@@ -201,7 +201,7 @@ void executeQueryToFile(sxnc_environment environi, sxnc_processor ** proc, char 
 		cpp = (jobject) createSaxonProcessor (environi.env, cppClass, "(Z)V", NULL, (jboolean)sxn_license);
 	}
  	
-	if(queryFileID == NULL) {	
+	if(queryFileID == NULL) {
 		queryFileID = (jmethodID)(*(environi.env))->GetMethodID (environi.env, cppClass,"executeQueryToFile", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/Object;)V");
  		if (!queryFileID) {
         		printf("Error: MyClassInDll. executeQueryToString not found\n");
@@ -242,7 +242,7 @@ void executeQueryToFile(sxnc_environment environi, sxnc_processor ** proc, char 
 	   
 	}
 	}
-      (*(environi.env))->CallVoidMethod(environi.env,cpp, queryFileID, (cwd== NULL ? (*(environi.env))->NewStringUTF(environi.env, "") : (*(environi.env))->NewStringUTF(environi.env, cwd)), (*(environi.env))->NewStringUTF(environi.env, outputfile), stringArray, objectArray );    
+      (*(environi.env))->CallVoidMethod(environi.env,cpp, queryFileID, (cwd== NULL ? (*(environi.env))->NewStringUTF(environi.env, "") : (*(environi.env))->NewStringUTF(environi.env, cwd)), (*(environi.env))->NewStringUTF(environi.env, outputfile), stringArray, objectArray );
 	  (*(environi.env))->DeleteLocalRef(environi.env, objectArray);
 	  (*(environi.env))->DeleteLocalRef(environi.env, stringArray);
 

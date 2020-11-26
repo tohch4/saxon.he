@@ -20,7 +20,7 @@ cdef extern from "../SaxonProcessor.h":
 
         #set saxon resources directory
         void setResourcesDirectory(const char* dir)
-        
+
         #get saxon resources directory
         const char * getResourcesDirectory()
 
@@ -107,7 +107,7 @@ cdef extern from "../SaxonProcessor.h":
 
         void clearProperties()
 
-        void setupXslMessage(bool show, const char* filename=NULL)
+        void setupXslMessage(bool show, const char* filename=nullptr)
 
         void transformFileToFile(const char* sourcefile, const char* stylesheetfile, const char* outputfile)
         
@@ -209,7 +209,7 @@ cdef extern from "../SaxonProcessor.h":
         void clearProperties()
 
         # Get the messages written using the <code>xsl:message</code> instruction
-        void setupXslMessage(bool show, const char* filename=NULL)
+        void setupXslMessage(bool show, const char* filename=nullptr)
 
         # Perform a one shot transformation. The result is stored in the supplied outputfile.
         void transformFileToFile(const char* sourcefile, const char* stylesheetfile, const char* outputfile)

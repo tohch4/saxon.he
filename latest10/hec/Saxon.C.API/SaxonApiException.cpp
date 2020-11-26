@@ -26,7 +26,7 @@
 
 
 	SaxonApiException::SaxonApiException(const char * m, const char * ec, const char * sysId, int linenumber){
-		if(m != NULL) {
+		if(m != nullptr) {
 		    message = std::string(m);
 		} else {
 		    message = "";
@@ -34,13 +34,13 @@
 
         lineNumber = linenumber;
 
-        if (ec != NULL) {
+        if (ec != nullptr) {
             errorCode = std::string(ec);
         } else {
             errorCode = "";
         }
 
-        if(sysId != NULL) {
+        if(sysId != nullptr) {
             systemId = sysId;
         } else {
             systemId = "";
@@ -53,7 +53,7 @@
     /**
      * A destructor.
      */
-	SaxonApiException::~SaxonApiException() throw {
+	SaxonApiException::~SaxonApiException() noexcept {
         message.clear();
         errorCode.clear();
         systemId.clear();
@@ -62,7 +62,7 @@
     /**
      * Get the error code associated with the ith exception in the vector, if there is one
      * @param i - ith exception in the vector
-     * @return the associated error code, or null if no error code is available
+     * @return the associated error code, or nullptr if no error code is available
      */
 	const char * SaxonApiException::getErrorCode(){
 		return errorCode.c_str();

@@ -20,7 +20,8 @@ cdef const char * make_c_str(str str_value):
     if str_value is None:
         return NULL
     else:
-        c_string = str_value.encode('UTF-8')
+        py_string_string = str_value.encode('UTF-8') if str_value is not None else None
+        c_string = py_string_string if str_value is not None else ""
         return c_string
 
 cdef str make_py_str(const char * c_value):
@@ -116,24 +117,19 @@ cdef class PySaxonProcessor:
          py_value_string = cwd.encode('UTF-8') if cwd is not None else None
          cdef char * c_str_ = py_value_string if cwd is not None else ""
          self.thisptr.setcwd(c_str_)
-    
+
 
     def set_resources_directory(self, dir_):
         """
-        Property to set or get resources directory 
-        
+        Property to set or get resources directory
+
         :str: A string of the resources directory which Saxon will use
 
         """
-        py_value_string = dir_.encode('UTF-8') if dir_ is not None else None
-        cdef char * c_str_ = py_value_string if dir_ is not None else ""
-        self.thisptr.setResourcesDirectory(c_str_)
 
     @property
     def resources_directory(self):
-        cdef const char* c_string = self.thisptr.getResourcesDirectory()
-        ustring = c_string.decode('UTF-8') if c_string is not NULL else None
-        return ustring
+        return NULL
     
     def set_configuration_property(self, name, value):
         """
@@ -248,7 +244,7 @@ cdef class PySaxonProcessor:
         of a zero-length string (and potentially other strings, in future)
         
         Args:
-            str_ (str): the String value. Null is taken as equivalent to "".
+            str_ (str): the String value. NULL is taken as equivalent to "".
 
         Returns:
             PyXdmAtomicValue: The corresponding Xdm StringValue
@@ -569,7 +565,7 @@ cdef class PyXsltProcessor:
 
         Args:
             name (str): the name of the stylesheet parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name
-            value (PyXdmValue): the value of the stylesheet parameter, or null to clear a previously set value
+            value (PyXdmValue): the value of the stylesheet parameter, or NULL to clear a previously set value
 
         """
         cdef const char * c_str = make_c_str(name)
@@ -1164,7 +1160,7 @@ cdef class PyXslt30Processor:
 
         Args:
             name (str): the name of the stylesheet parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name
-            value (PyXdmValue): the value of the stylesheet parameter, or null to clear a previously set value
+            value (PyXdmValue): the value of the stylesheet parameter, or NULL to clear a previously set value
 
         """
         cdef const char * c_str = make_c_str(name)
@@ -1811,7 +1807,7 @@ cdef class PyXslt30Processor:
                xsltproc.call_template_returning_file("go", output_file="result.xml")
 			   print(result)
         """
-        cdef char * c_outputfile = NULL       
+        cdef char * c_outputfile = NULL
         cdef const char * c_templateName = NULL
         cdef const char * c_sourcefile = NULL
         cdef const char * c_stylesheetfile = NULL
@@ -2710,7 +2706,8 @@ cdef class PyXPathProcessor:
             xpath_str (str): The XPath query supplied as a string
 
         Returns:
-            PyXdmItem: A single Xdm Item is returned 
+            PyXdmItem: A single Xdm Item is returned. return None if the expression returns an empty sequence.
+            If the expression returns a sequence of more than one item, any items after the first are ignored.
 
         """
         cdef PyXdmNode val = None
@@ -3128,7 +3125,7 @@ cdef class PySchemaValidator:
 
         """
         cdef PyXdmNode val = None
-        cdef saxoncClasses.XdmNode * xdmNode = NULL             
+        cdef saxoncClasses.XdmNode * xdmNode = NULL
         xdmNode = self.thissvptr.getValidationReport()
         if xdmNode == NULL:
             return None
@@ -3291,7 +3288,7 @@ cdef class PyXdmValue:
         if type(self) is PyXdmValue:
             self.thisvptr = new saxoncClasses.XdmValue() 
      def __dealloc__(self):
-        if type(self) is PyXdmValue and self.thisvptr != NULL:    
+        if type(self) is PyXdmValue and self.thisvptr != NULL:
             if self.thisvptr.getRefCount() < 1:
                 del self.thisvptr            
             else:
@@ -3596,7 +3593,7 @@ cdef class PyXdmNode(PyXdmItem):
         This will be the same as the System ID unless xml:base has been used. Where the node does not have a base URI of its own,
         the base URI of its parent node is returned.
         Returns:
-            str: String value of the base uri for this node. This may be null if the base URI is unknown, including the case
+            str: String value of the base uri for this node. This may be NULL if the base URI is unknown, including the case
                  where the node has no parent.
         """
         return make_py_str(self.derivednptr.getBaseUri())

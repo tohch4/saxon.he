@@ -41,7 +41,7 @@ void setDllname() {
 	size_t rDir_len = strlen(tempResources_dir);
 	char * env = getenv("SAXONC_HOME");
 	size_t env_len;
-	if (env != NULL) {
+	if (env != nullptr) {
 
 
 		env_len = strlen(env);
@@ -68,7 +68,7 @@ void setDllname() {
 		resources_dir = malloc(sizeof(char)*rbufSize);
 
 #ifdef DEBUG
-		if (dllname == NULL || resources_dir == NULL)
+		if (dllname == nullptr || resources_dir == nullptr)
 		{
 			// error
 			printf("Error in allocation of Dllname\n");
@@ -119,7 +119,7 @@ char * _getResourceDirectory() {
  * Recommended method to use to load library
  */
 HANDLE loadDefaultDll() {
-	return loadDll(NULL);
+	return loadDll(nullptr);
 }
 
 
@@ -128,7 +128,7 @@ HANDLE loadDefaultDll() {
  */
 HANDLE loadDll(char* name)
 {
-	if (name == NULL) {
+	if (name == nullptr) {
 		setDllname();
 		name = getDllname();
 		//perror("Error1: ");
@@ -244,7 +244,7 @@ jclass lookForClass(JNIEnv* penv, const char* name)
 
 	if (!clazz) {
 		printf("Unable to find class %s\n", name);
-		return NULL;
+		return nullptr;
 	}
 #ifdef DEBUG
 	printf("Class %s found\n", name);
@@ -334,7 +334,7 @@ jobject createSaxonProcessor(JNIEnv* penv, jclass myClassInDll, const char * arg
 	MID_initi = (jmethodID)(*(penv))->GetMethodID(penv, myClassInDll, "<init>", arguments);
 	if (!MID_initi) {
 		printf("Error: MyClassInDll.<init>() not found\n");
-		return NULL;
+		return nullptr;
 	}
 
 	if (argument1) {
@@ -347,7 +347,7 @@ jobject createSaxonProcessor(JNIEnv* penv, jclass myClassInDll, const char * arg
 	}
 	if (!obj) {
 		printf("Error: failed to allocate an object\n");
-		return NULL;
+		return nullptr;
 	}
 	return obj;
 }
@@ -365,7 +365,7 @@ jobject createSaxonProcessor2(JNIEnv* penv, jclass myClassInDll, const char * ar
 	MID_initi = (jmethodID)(*(penv))->GetMethodID(penv, myClassInDll, "<init>", arguments);
 	if (!MID_initi) {
 		printf("Error: MyClassInDll.<init>() not found\n");
-		return NULL;
+		return nullptr;
 	}
 
 	if (argument1) {
@@ -378,7 +378,7 @@ jobject createSaxonProcessor2(JNIEnv* penv, jclass myClassInDll, const char * ar
 	}
 	if (!obj) {
 		printf("Error: failed to allocate an object\n");
-		return NULL;
+		return nullptr;
 	}
 	return obj;
 }
@@ -406,9 +406,9 @@ const char * checkForException(sxnc_environment *environii, jobject callingObjec
 
 		jmethodID getName = (jmethodID)(*(environii->env))->GetMethodID(environii->env, clscls, "getName", "()Ljava/lang/String;");
 		jstring name = (jstring)((*(environii->env))->CallObjectMethod(environii->env, exccls, getName));
-		char const* utfName = (*(environii->env))->GetStringUTFChars(environii->env, name, NULL);
+		char const* utfName = (*(environii->env))->GetStringUTFChars(environii->env, name, nullptr);
 
-		//if(callingObject != NULL && strcmp(utfName, "net.sf.saxon.s9api.SaxonApiException") == 0){
+		//if(callingObject != nullptr && strcmp(utfName, "net.sf.saxon.s9api.SaxonApiException") == 0){
 
 		jmethodID  getMessage = (jmethodID)(*(environii->env))->GetMethodID(environii->env, exccls, "getMessage", "()Ljava/lang/String;");
 
@@ -421,9 +421,9 @@ const char * checkForException(sxnc_environment *environii, jobject callingObjec
 				(*(environii->env))->ExceptionClear(environii->env);
 				return 0;
 			}
-			char const* utfMessage = (*(environii->env))->GetStringUTFChars(environii->env, message, NULL);
+			char const* utfMessage = (*(environii->env))->GetStringUTFChars(environii->env, message, nullptr);
 
-			if (utfMessage != NULL) {
+			if (utfMessage != nullptr) {
 				(*(environii->env))->ReleaseStringUTFChars(environii->env, name, utfName);
 			}
 
@@ -456,13 +456,13 @@ void finalizeJavaRT(JavaVM* jvm)
  */
 jobject getParameter(sxnc_parameter *parameters, int parLen, const char* namespacei, const char * name) {
 	int i = 0;
-	namespacei = NULL; // variable not used yet
-	if (namespacei == NULL) {} // avoiding warning. In next release fix this
+	namespacei = nullptr; // variable not used yet
+	if (namespacei == nullptr) {} // avoiding warning. In next release fix this
 	for (i = 0; i < parLen; i++) {
 		if (strcmp(parameters[i].name, name) == 0)
 			return (jobject)parameters[i].value;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -471,8 +471,8 @@ jobject getParameter(sxnc_parameter *parameters, int parLen, const char* namespa
  */
 char* getProperty(sxnc_property * properties, int propLen, const char* namespacei, const char * name) {
 	int i = 0;
-	namespacei = NULL; // variable not used yet
-	if (namespacei == NULL) {} // avoiding warning. In next release fix this
+	namespacei = nullptr; // variable not used yet
+	if (namespacei == nullptr) {} // avoiding warning. In next release fix this
 	for (i = 0; i < propLen; i++) {
 		if (strcmp(properties[i].name, name) == 0)
 			return properties[i].value;
@@ -486,7 +486,7 @@ char* getProperty(sxnc_property * properties, int propLen, const char* namespace
  */
 void setParameter(sxnc_parameter **parameters, int * parLen, int * parCap, const char * namespacei, const char * name, jobject value) {
 
-	namespacei = NULL;
+	namespacei = nullptr;
 	if (getParameter(*parameters, (*parLen), "", name) != 0) {
 		return;
 	}
@@ -559,18 +559,18 @@ void clearSettings(sxnc_parameter **parameters, int *parLen, sxnc_property ** pr
 
 const char * stringValue(sxnc_environment *environi, jobject value) {
 	jclass  objClass = lookForClass(environi->env, "java/lang/Object");
-	static jmethodID strMID = NULL;
+	static jmethodID strMID = nullptr;
 	if (!strMID) {
 		strMID = (jmethodID)(*(environi->env))->GetMethodID(environi->env, objClass, "toString", "()Ljava/lang/String;");
 		if (!strMID) {
 			printf("\nError: Object %s() not found\n", "toString");
 			fflush(stdout);
-			return NULL;
+			return nullptr;
 		}
 	}
 	jstring result = (jstring)((*(environi->env))->CallObjectMethod(environi->env, value, strMID));
 	if (result) {
-		const char * str = (*(environi->env))->GetStringUTFChars(environi->env, result, NULL);
+		const char * str = (*(environi->env))->GetStringUTFChars(environi->env, result, nullptr);
 		return str;
 	}
 

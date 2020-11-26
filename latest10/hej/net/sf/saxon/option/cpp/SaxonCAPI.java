@@ -52,7 +52,7 @@ public class SaxonCAPI {
     //protected List<SaxonCException> saxonWarnings = new ArrayList<SaxonCException>();
     public static boolean debug = false;
     protected boolean schemaAware = false;
-    public static String RESOURCES_DIR = null;
+    //public static String RESOURCES_DIR = null;
 
 
 

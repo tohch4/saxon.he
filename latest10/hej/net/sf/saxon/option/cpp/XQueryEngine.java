@@ -333,15 +333,6 @@ public class XQueryEngine extends SaxonCAPI {
                         item = (XdmItem) value;
                     }
                     eval.setContextItem(item);
-                }else if (optionsMap.containsKey("resources")) {
-                    if (SaxonCAPI.RESOURCES_DIR == null) {
-                        String dir1 = (String) optionsMap.get("resources");
-                        if (!dir1.endsWith("/")) {
-                            dir1 = cwd.concat("/");
-                        }
-                        SaxonCAPI.RESOURCES_DIR = dir1;
-                    }
-
                 }
 
             }

@@ -65,7 +65,7 @@ public:
 
     /**
      * Get the error code associated with the exception, if it exists
-     * @return the associated error code, or null if no error code is available
+     * @return the associated error code, or nullptr if no error code is available
      */
 	const char * getErrorCode();
 
@@ -76,7 +76,7 @@ public:
     /**
      * Returns the detail message string of the throwable, if there is one
      * @return the detail message string of this <tt>Throwable</tt> instance
-     *         (which may be <tt>null</tt>).
+     *         (which may be <tt>nullptr</tt>).
      */
 	const char * getMessage();
 

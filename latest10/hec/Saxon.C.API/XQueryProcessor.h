@@ -55,7 +55,7 @@ public:
 
     //!Set the initial context item for the query
     /**
-      @param value - the initial context item, or null if there is to be no initial context item
+      @param value - the initial context item, or nullptr if there is to be no initial context item
     */
     void setContextItem(XdmItem * value);
 
@@ -73,7 +73,7 @@ public:
      * Set a parameter value used in the query
      *s
      * @param name  of the parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name"
-     * @param value of the query parameter, or null to clear a previously set value
+     * @param value of the query parameter, or nullptr to clear a previously set value
      */
     void setParameter(const char * name, XdmValue*value);
 
@@ -188,7 +188,7 @@ public:
      *               in this case the prefix will not be available for use, except in the case where the prefix
      *               is also a zero length string, in which case the absence of a prefix implies that the name
      *               is in no namespace.
-     * Assume the prefix or uri is null.
+     * Assume the prefix or uri is nullptr.
      */
     void declareNamespace(const char *prefix, const char * uri);
 
@@ -219,7 +219,7 @@ public:
 
      //!Set the static base URI for the query
      /**
-     * @param baseURI the static base URI; or null to indicate that no base URI is available
+     * @param baseURI the static base URI; or nullptr to indicate that no base URI is available
      */
     void setQueryBaseURI(const char * baseURI);
 
@@ -231,7 +231,7 @@ public:
 
      //! Check for exception thrown.
    /**
-    * @return char*. Returns the main exception message if thrown otherwise return NULL
+    * @return char*. Returns the main exception message if thrown otherwise return nullptr
     */
     const char* checkException();
 

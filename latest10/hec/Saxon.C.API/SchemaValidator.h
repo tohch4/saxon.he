@@ -43,7 +43,7 @@ public:
      //! Set the Current working Directory
     /**
      * Set the current working directory for the Schema Validator
-     * @param cwd Supplied working directory which replaces any set cwd. Ignore if cwd is NULL. 
+     * @param cwd Supplied working directory which replaces any set cwd. Ignore if cwd is nullptr.
     */
    void setcwd(const char* cwd);
 
@@ -71,17 +71,17 @@ public:
 
     /**
      * Validate an instance document by a registered schema.
-     * @param sourceFile Name of the file to be validated. Allow null when source document is supplied
+     * @param sourceFile Name of the file to be validated. Allow nullptr when source document is supplied
      * with other method
      */
-  void validate(const char * sourceFile = NULL);
+  void validate(const char * sourceFile = nullptr);
    
   //!Validate an instance document supplied as a Source object
    /**
-  * @param sourceFile The name of the file to be validated. Default is NULL
+  * @param sourceFile The name of the file to be validated. Default is nullptr
   * @return XdmNode - the validated document returned to the calling program
   */
-  XdmNode * validateToNode(const char * sourceFile = NULL);
+  XdmNode * validateToNode(const char * sourceFile = nullptr);
 
 
      //!Set the source node for validation
@@ -93,7 +93,7 @@ public:
      //! Get the Validation report
    /**
     * The valdiation-report option must have been set to true in the properties to use this feature.
-    * @return XdmNode - Pointer to XdmNode. Return NULL if validation reporting feature has not been enabled
+    * @return XdmNode - Pointer to XdmNode. Return nullptr if validation reporting feature has not been enabled
    */
     XdmNode* getValidationReport();
 
@@ -102,7 +102,7 @@ public:
      * Set a parameter value used in the validator
      *s
      * @param name  of the parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name"
-     * @param value of the query parameter, or null to clear a previously set value
+     * @param value of the query parameter, or nullptr to clear a previously set value
      */
     void setParameter(const char * name, XdmValue*value);
 
@@ -155,7 +155,7 @@ public:
 
      //! Check for exception thrown.
    /**
-    * @return char*. Returns the main exception message if thrown otherwise return NULL
+    * @return char*. Returns the main exception message if thrown otherwise return nullptr
     */
     const char* checkException();
 

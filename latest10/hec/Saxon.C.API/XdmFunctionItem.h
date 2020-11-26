@@ -21,6 +21,8 @@ public:
 
     XdmFunctionItem();
 
+    XdmFunctionItem(jobject obj);
+
     XdmFunctionItem(const XdmFunctionItem &d);
 
 
@@ -31,13 +33,11 @@ public:
         	}
     }
 
-    XdmFunctionItem(jobject);
-
     const char* getName();
 
     virtual int getArity();
 
-    static XdmFunctionItem * getSystemFunction(const char * name, int arity);
+    static XdmFunctionItem * getSystemFunction(SaxonProcessor * processor, const char * name, int arity);
 
     XdmValue * call(XdmValue ** arguments, int argument_length);
     

@@ -30,9 +30,9 @@ public:
 
     }
 
-    XdmArray(jobject, int length);
+    XdmArray(jobject);
 
-    int arrayLength();
+    int arrayLength() const;
 
     XdmValue* get(int n);
 
@@ -58,8 +58,7 @@ private:
 
 
     std::string fname;
-    int arity;
-    int length;
+    int arity{};
 
 };
 

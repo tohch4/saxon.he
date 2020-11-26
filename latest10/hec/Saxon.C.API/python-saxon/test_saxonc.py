@@ -26,7 +26,7 @@ def test_create_bool():
     assert isinstance(sp2, PySaxonProcessor)
 
 
-'''@pytest.mark.skip('Error: SaxonDll.processor is NULL in constructor(configFile)')'''
+'''@pytest.mark.skip('Error: SaxonDll.processor is nullptr in constructor(configFile)')'''
 def test_create_config():
     """Create SaxonProcessor object with a configuration file argument"""
     conf_xml = b"""\
@@ -298,7 +298,7 @@ def testUseAssociated(saxonproc, files_dir):
     assert result is not None
 
 
-def testNullStylesheet(saxonproc):
+def testnullptrStylesheet(saxonproc):
 
     trans = saxonproc.new_xslt30_processor()
     result = trans.apply_templates_returning_string()

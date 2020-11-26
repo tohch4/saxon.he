@@ -198,13 +198,13 @@ jmethodID findConstructor (JNIEnv* penv, jclass myClassInDll, char* arguments);
 
 /*
  * Create the Java SaxonProcessor
- * This can be used to pass the sub-classes of SaxonAPI, there the argument1  should can be null or Processor object
+ * This can be used to pass the sub-classes of SaxonAPI, there the argument1  should can be nullptr or Processor object
  */
 jobject createSaxonProcessor (JNIEnv* penv, jclass myClassInDll, const char * arguments, jobject argument1, jboolean licensei);
 
 /*
  * Create the Java SaxonProcessor
- * This can be used to pass the sub-classes of SaxonAPI, there the argument1  should can be null or Processor object
+ * This can be used to pass the sub-classes of SaxonAPI, there the argument1  should can be nullptr or Processor object
  */
 jobject createSaxonProcessor2 (JNIEnv* penv, jclass myClassInDll, const char * arguments, jobject argument1);
 

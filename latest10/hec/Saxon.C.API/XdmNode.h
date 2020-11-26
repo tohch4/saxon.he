@@ -55,7 +55,7 @@ public:
 	 * Get the name of the node, as a string in the form of a EQName
 	 *
 	 * @return the name of the node. In the case of unnamed nodes (for example, text and comment nodes)
-	 *         return null.
+	 *         return nullptr.
 	 */
 	const char * getNodeName();
 

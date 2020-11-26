@@ -344,25 +344,6 @@ public class XPathProcessor extends SaxonCAPI {
 
             }
 
-
-            if (map.containsKey("resources")) {
-                valuei = map.get("resources");
-
-                char separatorChar = '/';
-                if (SaxonCAPI.RESOURCES_DIR == null) {
-                    String dir1 = (String) valuei;
-                    if (!dir1.endsWith("/")) {
-                        dir1 = dir1.concat("/");
-                    }
-                    if (File.separatorChar != '/') {
-                        dir1.replace(separatorChar, File.separatorChar);
-                        separatorChar = '\\';
-                    }
-                    SaxonCAPI.RESOURCES_DIR = dir1;
-                }
-
-            }
-
             if (map.containsKey("extc")) {
                 //extension function library path
                 String libName = (String) map.get("extc");

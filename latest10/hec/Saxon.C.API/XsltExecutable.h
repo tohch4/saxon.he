@@ -5,8 +5,8 @@
 // This Source Code Form is "Incompatible With Secondary Licenses", as defined by the Mozilla Public License, v. 2.0.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SAXON_XSLTEXEC_H
-#define SAXON_XSLTEXEC_H
+#ifndef SAXON_XSLT_EXEC_H
+#define SAXON_XSLT_EXEC_H
 
 
 #include "SaxonProcessor.h"
@@ -19,6 +19,9 @@ class Xslt30Processor;
 class XdmValue;
 class XdmItem;
 class XdmNode;
+class XdmFunctionItem;
+class XdmMap;
+class XdmArray;
 
 /*! An <code>XsltExecutable</code> represents the compiled form of a stylesheet.
  * <p>An XsltExecutable is created by using one of the <code>compile</code> methods on the
@@ -73,6 +76,14 @@ public:
     void setGlobalContextFromFile(const char * filename);
 
 
+    //! Create a clone object of this Xslt30Processor object
+    /**
+     *
+     * @return
+     */
+    XsltExecutable *clone();
+
+
     //!The initial value to which templates are to be applied (equivalent to the <code>select</code> attribute of <code>xsl:apply-templates</code>)
     /**
     *  @param selection - The value to which the templates are to be applied
@@ -106,12 +117,9 @@ public:
      * Set the value of a stylesheet parameter
      *
      * @param name  the name of the stylesheet parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name"
-     * @param value the value of the stylesheet parameter, or null to clear a previously set value
-     * @param _static For static (compile-time) parameters we set this flag to true, which means the parameter is
-     * must be set on the XsltCompiler object, prior to stylesheet compilation. The default is false. Non-static parameters
-     * may also be provided.
+     * @param value the value of the stylesheet parameter, or nullptr to clear a previously set value
      */
-    void setParameter(const char* name, XdmValue*value);
+    void setParameter(const char* name, XdmValue * value);
 
 
 
@@ -233,7 +241,7 @@ public:
      * @param  filename - If the filename argument is present then the xsl:message output is appended to the given
      *                    filename with location cwd+filename
      */
-    void setupXslMessage(bool show, const char* filename=NULL);
+    void setupXslMessage(bool show, const char* filename=nullptr);
 
 
     /**
@@ -246,7 +254,7 @@ public:
      * @param outputFilename the destination for the XML document containing the diagnostic representation
      *                    of the compiled stylesheet. The stream will be closed when writing has finished.
      */
-    void export(const char * filename);
+    void exportStylesheet(const char * filename);
 
 
       //!Perform a one shot transformation.
@@ -305,7 +313,7 @@ public:
     * file destination. If setInitialTemplateParameters(std::Map, boolean) has been
     * called, then the parameters supplied are made available to the called template (no error
     * occurs if parameters are supplied that are not used).
-    * @param templateName - The name of the initial template. This must match the name of a public named template in the stylesheet. If the value is null, the clark name for xsl:initial-template is used.
+    * @param templateName - The name of the initial template. This must match the name of a public named template in the stylesheet. If the value is nullptr, the clark name for xsl:initial-template is used.
     * @param outputfile - The file name where results will be stored,
     */
     void callTemplateReturningFile(const char* templateName, const char* outfile);
@@ -315,7 +323,7 @@ public:
     * If setInitialTemplateParameters(std::Map, boolean) has been
     * called, then the parameters supplied are made available to the called template (no error
     * occurs if parameters are supplied that are not used).
-    * @param templateName - the name of the initial template. This must match the name of a public named template in the stylesheet. If the value is null, the clark name for xsl:initial-template is used.
+    * @param templateName - the name of the initial template. This must match the name of a public named template in the stylesheet. If the value is nullptr, the clark name for xsl:initial-template is used.
     * @param outputfile - The file name where results will be stored,
     */
     const char* callTemplateReturningString(const char* templateName);
@@ -325,7 +333,7 @@ public:
     * If setInitialTemplateParameters(std::Map, boolean) has been
     * called, then the parameters supplied are made available to the called template (no error
     * occurs if parameters are supplied that are not used).
-    * @param templateName - the name of the initial template. This must match the name of a public named template in the stylesheet. If the value is null, the clark name for xsl:initial-template is used.
+    * @param templateName - the name of the initial template. This must match the name of a public named template in the stylesheet. If the value is nullptr, the clark name for xsl:initial-template is used.
     * @param outputfile - The file name where results will be stored,
     */
     XdmValue* callTemplateReturningValue(const char* templateName);
@@ -405,11 +413,13 @@ public:
     bool exceptionOccurred();
 
 
-     //! Check for exception thrown.
-	/**
-	* @return cha*. Returns the exception message if thrown otherwise return NULL
-	*/
-    const char* checkException();
+
+
+    //! Check for exception thrown.
+    /**
+    * @return cha*. Returns the exception message if thrown otherwise return nullptr
+    */
+    SaxonApiException* getException();
 
 
      //! Clear any exception thrown
@@ -427,14 +437,14 @@ public:
      * A transformation may have a number of errors reported against it.
      * @return char* - The message of the i'th exception
     */
-    const char * getErrorMessage(int i);
+    const char * getErrorMessage();
 
      //! Get the ith error code if there are any error
     /**
      * A transformation may have a number of errors reported against it.
      * @return char* - The error code of the i'th exception. The error code are related to the specific specification
     */
-    const char * getErrorCode(int i);
+    const char * getErrorCode();
 
 
 
@@ -450,7 +460,7 @@ private:
       @param proc - Supplied pointer to the SaxonProcessor object
       cwd - The current working directory
     */
-    XsltExecutable(std::string cwd="", jobject executableObject);
+    XsltExecutable(jobject exObject, std::string cwd="");
 
 	/**
 	 * Xslt30Processor copy constructor.
@@ -467,8 +477,8 @@ private:
 	std::map<std::string,XdmValue*> parameters; /*!< map of parameters used for the transformation as (string, value) pairs */
 
 	std::map<std::string,std::string> properties; /*!< map of properties used for the transformation as (string, string) pairs */
-    SaxonApiException * exception;
+
 };
 
 
-#endif /* SAXON_XSLT30_H */
+#endif /* SAXON_XSLT_EXEC_H */

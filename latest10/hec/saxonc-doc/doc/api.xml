@@ -932,8 +932,9 @@
                   <span class="signature">transformToFile(<a class="bodylink code"
                         href="../saxon_c_php_xdmnode">XdmNode</a> $context)</span>
                   <div class="fcomment">Perform a one shot transformation, saving the results to the
-                     file as previously set (e.g. using <code>setOutputFile()</code>). The global
-                     context item may be supplied in the $context argument.</div>
+                     file as previously set (e.g. using <code>setOutputFile()</code>).
+                     The global $context item argument is optional, therefore this
+                     method will execute without any arguments.</div>
                </td>
             </tr>
             <tr>
@@ -944,8 +945,8 @@
                   <span class="signature">transformToString(<a class="bodylink code"
                         href="../saxon_c_php_xdmnode">XdmNode</a> $context)</span>
                   <div class="fcomment">Perform a one shot transformation. The result is returned as
-                     a serialized string. The global context item may be supplied in the $context
-                     argument.</div>
+                     a serialized string. The global $context item argument is optional, therefore this
+                     method will execute without any arguments.</div>
                </td>
             </tr>
             <tr>
@@ -957,8 +958,8 @@
                         href="../saxon_c_php_xdmnode">XdmNode</a> $context)</span>
                   <div class="fcomment">Perform a one shot transformation. The result is returned as
                      an <a class="bodylink code" href="../saxon_c_php_xdmvalue">XdmValue</a> object.
-                     If there are failures then a null is returned. The global context item may be
-                     supplied in the $context argument.</div>
+                     If there are failures then a null is returned.The global $context item argument is optional, therefore this
+                     method will execute without any arguments..</div>
                </td>
             </tr>
             <tr>
@@ -1380,7 +1381,9 @@
                   <div class="fcomment">Compile and evaluate an XPath expression whose result is
                      expected to be a single item, with a given context item. The expression is
                      supplied as a character string, and the result returned as an <a
-                        class="bodylink code" href="../saxon_c_php_xdmitem">XdmItem</a>.</div>
+                        class="bodylink code" href="../saxon_c_php_xdmitem">XdmItem</a>.
+                     Return NULL if the expression returns an empty sequence. If the expression
+                     returns a sequence of more than one item, any items after the first are ignored.</div>
                </td>
             </tr>
             <tr>

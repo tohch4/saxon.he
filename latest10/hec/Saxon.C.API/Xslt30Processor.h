@@ -25,6 +25,8 @@ class XdmNode;
  */
 class Xslt30Processor {
 
+    friend class XsltExecutable;
+
 public:
 
     //! Default constructor.
@@ -90,7 +92,7 @@ public:
      * to another.
      *
      * @param name  the name of the stylesheet parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name"
-     * @param value the value of the stylesheet parameter, or null to clear a previously set value
+     * @param value the value of the stylesheet parameter, or nullptr to clear a previously set value
      * @param _static For static (compile-time) parameters we set this flag to true, which means the parameter is
      * must be set on the XsltCompiler object, prior to stylesheet compilation. The default is false. Non-static parameters
      * may also be provided.
@@ -162,7 +164,7 @@ public:
      * @param  filename - If the filename argument is present then the xsl:message output is appended to the given
      *                    filename with location cwd+filename
      */
-    void setupXslMessage(bool show, const char* filename=NULL);
+    void setupXslMessage(bool show, const char* filename=nullptr);
 
 
 
@@ -171,7 +173,7 @@ public:
      * The result is stored in the supplied outputfile.
      *
      * @param sourcefile - The file name of the source document
-     * @param stylesheetfile - The file name of the stylesheet document. If NULL the most recently compiled stylesheet is used
+     * @param stylesheetfile - The file name of the stylesheet document. If nullptr the most recently compiled stylesheet is used
      * @param outputfile - The file name where results will be stored
      */
     void transformFileToFile(const char* sourcefile, const char* stylesheetfile, const char* outputfile); 
@@ -181,7 +183,7 @@ public:
      * The result is returned as a string
      *
      * @param sourcefile - The file name of the source document
-     * @param stylesheetfile - The file name of the stylesheet document. If NULL the most recently compiled stylesheet is used
+     * @param stylesheetfile - The file name of the stylesheet document. If nullptr the most recently compiled stylesheet is used
      * @return char array - result of the transformation
      */
     const char * transformFileToString(const char* sourcefile, const char* stylesheetfile);
@@ -190,7 +192,7 @@ public:
      * Perform a one shot transformation. The result is returned as an XdmValue
      *
      * @param sourcefile - The file name of the source document
-     * @param stylesheetfile - The file name of the stylesheet document. If NULL the most recently compiled stylesheet is used
+     * @param stylesheetfile - The file name of the stylesheet document. If nullptr the most recently compiled stylesheet is used
      * @return XdmValue - result of the transformation
      */
     XdmValue * transformFileToValue(const char* sourcefile, const char* stylesheetfile);
@@ -281,7 +283,7 @@ public:
 
      //! Check for exception thrown.
 	/**
-	* @return cha*. Returns the exception message if thrown otherwise return NULL
+	* @return cha*. Returns the exception message if thrown otherwise return nullptr
 	*/
     const char* checkException();
 
@@ -306,6 +308,9 @@ public:
 
 
 
+
+
+
 private:
 	SaxonProcessor* proc;/*! */
 	jclass  cppClass;
@@ -314,6 +319,8 @@ private:
 	bool tunnel, jitCompilation;
 	std::map<std::string,XdmValue*> parameters; /*!< map of parameters used for the transformation as (string, value) pairs */
     SaxonApiException * exception;
+
+
 };
 
 

@@ -10,7 +10,7 @@
 jobject booleanValue(sxnc_environment *environi, bool b){ 
 	
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -35,7 +35,7 @@ jobject booleanValue(sxnc_environment *environi, bool b){
 jobject integerValue(sxnc_environment *environi, int i){ 
 	
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -67,7 +67,7 @@ printf("Value to build: %i",i);
 jobject doubleValue(sxnc_environment *environi, double d){ 
 	
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -92,7 +92,7 @@ jobject doubleValue(sxnc_environment *environi, double d){
 jobject floatValue(sxnc_environment *environi, float f){ 
 	
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -118,7 +118,7 @@ jobject floatValue(sxnc_environment *environi, float f){
 jobject longValue(sxnc_environment *environi, long l){ 
 	
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -143,7 +143,7 @@ jobject longValue(sxnc_environment *environi, long l){
 jobject getJavaStringValue(sxnc_environment *environi, const char *str){ 
 	
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -166,7 +166,7 @@ jobject xdmValueAsObj(sxnc_environment *environi, const char* type, const char* 
 	
 	jclass  saxoncClass = lookForClass(environi->env, "net/sf/saxon/option/cpp/SaxonCAPI");
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -198,7 +198,7 @@ sxnc_value * xdmValue(sxnc_environment *environi, const char* type, const char* 
 	
 	jclass  saxoncClass = lookForClass(environi->env, "net/sf/saxon/option/cpp/SaxonCAPI");
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return NULL;
 	 }
@@ -360,7 +360,7 @@ int size(sxnc_environment *environi, sxnc_value val){
 	
 	jclass  xdmValueClass = lookForClass(environi->env, "net/sf/saxon/s9api/XdmValue");
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return 0;
 	 }
@@ -386,7 +386,7 @@ sxnc_value * itemAt(sxnc_environment *environi, sxnc_value val, int i){
 	
 	jclass  xdmValueClass = lookForClass(environi->env, "net/sf/saxon/s9api/XdmValue");
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return 0;
 	 }
@@ -418,7 +418,7 @@ bool isAtomicvalue(sxnc_environment *environi, sxnc_value val){
 	
 jclass  xdmItemClass = lookForClass(environi->env, "net/sf/saxon/s9api/XdmItem");
 	 if(environi->env == NULL) {
-		printf("Error: Saxon-C env variable is null\n");
+		printf("Error: Saxon-C env variable is NULL\n");
 		fflush (stdout);
            	return 0;
 	 }
@@ -441,7 +441,7 @@ jclass  xdmItemClass = lookForClass(environi->env, "net/sf/saxon/s9api/XdmItem")
 int getIntegerValue(sxnc_environment *environi, sxnc_value value,  int failureVal){
 	
 	const char * valueStr = getStringValue(environi, value);
-	if(valueStr != NULL) {		
+	if(valueStr != NULL) {
 		int value = atoi(valueStr);
 		if(value != 0) {
 			return value;
@@ -473,7 +473,7 @@ bool getBooleanValue(sxnc_environment *environi, sxnc_value value){
 long getLongValue(sxnc_environment *environi, sxnc_value value,  long failureVal){
 	
 	const char * valueStr = getStringValue(environi, value);
-	if(valueStr != NULL) {		
+	if(valueStr != NULL) {
 		long value = atol(valueStr);
 		if(value != 0) {
 			return value;
@@ -511,7 +511,7 @@ float getFloatValue(sxnc_environment *environi, sxnc_value value,  float failure
 double getDoubleValue(sxnc_environment *environi, sxnc_value value, double failureVal){
 	
 	const char * valueStr = getStringValue(environi, value);
-	if(valueStr != NULL) {		
+	if(valueStr != NULL) {
 		double value = atof(valueStr);
 		if(value != 0) {
 			return value;

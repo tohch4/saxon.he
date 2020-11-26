@@ -234,15 +234,15 @@ Example 2:
 
         xslt->setSourceFile("xml/foo.xml");
 	XdmAtomicValue * xdmvaluex =processor->makeStringValue("Hello to you");
-	if(xdmvaluex !=NULL){
+	if(xdmvaluex !=nullptr){
 		cerr<< "xdmvaluex ok"<<endl; 			
 	}
 	xslt->setParameter("a-param", xdmvaluex);
-        const char * result = test->transformFileToString(NULL, "xsl/foo.xsl");
-	if(result != NULL) {
+        const char * result = test->transformFileToString(nullptr, "xsl/foo.xsl");
+	if(result != nullptr) {
 		cerr<<result<<endl;
 	} else {
-		cerr<<"Result is NULL"<<endl;
+		cerr<<"Result is nullptr"<<endl;
 	}
 	processor->clearParameters(true);
 	processor->clearProperties();
@@ -256,7 +256,7 @@ Example 3:
 
     xslt->setInitialMatchSelectionAsFile("cat.xml");
     const char * output = xslt->applyTemplatesReturningString("test.xsl");
-	if(output !=NULL){
+	if(output !=nullptr){
 		cerr<< output<<endl; 			
 	}
 	XdmValue * values = new XdmValue(processor);
@@ -270,13 +270,13 @@ Example 3:
     xslt->setInitialMatchSelection((XdmValue*)input);
 	xslt->compileFromFile("test2.xsl");
     
-    const char * rootValue = trans->callTemplateReturningString(NULL, "main");
+    const char * rootValue = trans->callTemplateReturningString(nullptr, "main");
 
 	
-	if(rootValue != NULL) {
+	if(rootValue != nullptr) {
 		cerr<<rootValue<<endl;
 	} else {
-		cerr<<"Result is NULL"<<endl;
+		cerr<<"Result is nullptr"<<endl;
 	}
 	xslt->clearParameters(true);
 	xslt->clearProperties();
@@ -348,14 +348,14 @@ Example:
 
 	XdmValue * resultValues = xpath->evaluate("//person");
 	
-	if(resultValues == NULL) {
-		 printf("result is null \n");
+	if(resultValues == nullptr) {
+		 printf("result is nullptr \n");
 	} else {
 		cout<<"Number of items="<<resultValues->size();
 		for(int i =0; i< resultValues->size();i++){
 			XdmItem * itemi = resultValues->itemAt(i);
-			if(itemi == NULL) {
-				cout<<"Item at position "<<i<<" should not be null";
+			if(itemi == nullptr) {
+				cout<<"Item at position "<<i<<" should not be nullptr";
 				break;
 			}
 			cout<<"Item at "<<i<<" ="<<itemi->getStringValue(processor);		
@@ -404,10 +404,10 @@ Example:
 	val->setProperty("verbose", "true");
 	val->validate("family.xml");
 	XdmNode * node = val->getValidationReport(); 
-	if(node != NULL) {
+	if(node != nullptr) {
 		cout<<"Validation Report"<<node->getStringValue();
 	} else {
-		cout<<"Error: Validation Report is NULL";
+		cout<<"Error: Validation Report is nullptr";
 	}
 </code></pre>
 
@@ -452,11 +452,11 @@ The methods on these class are given below. For a more comprehensive description
 |  |  |
 | ----: | :---- |
 | void | transformFileToFile(string $sourceFileName, string $stylesheetFileName, string outputfileName) <br> *Perform a one shot transformation. The result is stored in the supplied outputfile name.*  |
-| string | transformFileToString(string $sourceFileName, string $stylesheetFileName) <br> *Perform a one shot transformation. The result is returned as a string. If there are failures then a null is returned* |
+| string | transformFileToString(string $sourceFileName, string $stylesheetFileName) <br> *Perform a one shot transformation. The result is returned as a string. If there are failures then a nullptr is returned* |
 | XdmValue | transformFileToValue(string $fileName) <br> *Perform a one shot transformation. The result is returned as an XdmValue* |
 | void | transformToFile() <br> *Perform the transformation based upon cached stylesheet and source document.* |
 | string | transformToString() |
-| XdmValue | transformToValue() <br> *Perform the transformation based upon cached stylesheet and any source document. Result returned as an XdmValue object. If there are failures then a null is returned* |
+| XdmValue | transformToValue() <br> *Perform the transformation based upon cached stylesheet and any source document. Result returned as an XdmValue object. If there are failures then a nullptr is returned* |
 | void | compileFromFile(string $fileName) <br> *Compile a stylesheet suplied as by file name* |
 | void | compileFromString(string $str) <br> *Compile a stylesheet received as a string.*  |
 | void | compileFromValue(XdmNode $node)<br> *Compile a stylesheet received as an XdmNode.* |
@@ -480,9 +480,9 @@ The methods on these class are given below. For a more comprehensive description
 |  |  |
 | ----: | :---- |
 | void | addPackages(array packageFileNames) <br> *File names to XsltPackages stored on filestore are added to a set of packages, which will imported later for use when compiling.*  |
-| void | applyTemplatesReturningFile(string $stylesheetFileName) <br> *Invoke the stylesheet by applying templates to a supplied input sequence, Saving the results to file. The stylesheet file name argument can be supplied here. If null then the most recently compiled stylsheet is used.*  |
-| string | applyTemplatesReturningString(string $stylesheetFileName) <br> *Invoke the stylesheet by applying templates to a supplied input sequence. The result is returned as a serialized string. The stylesheet file name argument can be supplied here. If null then the most recently compiled stylsheet is used.* |
-| PyXdmValue | applyTemplatesReturningValue(string $stylesheetFileName) <br> *Invoke the stylesheet by applying templates to a supplied input sequence. the result is returned as an XdmValue object. The stylesheet file name argument can be supplied here. If null then the most recently compiled stylsheet is used.* |
+| void | applyTemplatesReturningFile(string $stylesheetFileName) <br> *Invoke the stylesheet by applying templates to a supplied input sequence, Saving the results to file. The stylesheet file name argument can be supplied here. If nullptr then the most recently compiled stylsheet is used.*  |
+| string | applyTemplatesReturningString(string $stylesheetFileName) <br> *Invoke the stylesheet by applying templates to a supplied input sequence. The result is returned as a serialized string. The stylesheet file name argument can be supplied here. If nullptr then the most recently compiled stylsheet is used.* |
+| PyXdmValue | applyTemplatesReturningValue(string $stylesheetFileName) <br> *Invoke the stylesheet by applying templates to a supplied input sequence. the result is returned as an XdmValue object. The stylesheet file name argument can be supplied here. If nullptr then the most recently compiled stylsheet is used.* |
 | void | compileFromAssociatedFile(string xmlFileName)<br> *Get the stylesheet associated via the xml-stylesheet processing instruction (see http://www.w3.org/TR/xml-stylesheet/) with the document document specified in the source parameter, and that match the given criteria.  If there are several suitable xml-stylesheet processing instructions, then the returned Source will identify a synthesized stylesheet module that imports all the referenced stylesheet module.* |
 | void | compileFromFile(string $fileName) <br> *Compile a stylesheet suplied as by file name* |
 | void | compileFromString(string $str) <br> *Compile a stylesheet received as a string.*  |
@@ -493,15 +493,15 @@ The methods on these class are given below. For a more comprehensive description
 | void | callFunctionReturningFile(string $FunctionName, array arguments, string outputfileName) <br> *Call a public user-defined function in the stylesheet. Here we wrap the result in an XML document, and sending this document to a specified file. Arguments: function name and array of XdmValue objects - he values of the arguments to be supplied to the function. These will be converted if necessary to the type as defined in the function signature, using the function conversion rules. *  |
 | string | callFunctionReturningString(string $FunctionName, array arguments) <br> *Call a public user-defined function in the stylesheet. Here we wrap the result in an XML document, and serialized this document to string value. Arguments: function name and array of XdmValue objects - he values of the arguments to be supplied to the function. These will be converted if necessary to the type as defined in the function signature, using the function conversion rules.* |
 | PyXdmValue | callFunctionReturningValue(string $FunctionName, array arguments) <br> *Call a public user-defined function in the stylesheet. Here we wrap the result in an XML document, and return the document as an XdmVale. Arguments: function name and array of XdmValue objects - he values of the arguments to be supplied to the function. These will be converted if necessary to the type as defined in the function signature, using the function conversion rules.* |
-| void | callTemplateReturningFile(string $stylesheetFileName, string $templateName, string outputfileName) <br> *Invoke a transformation by calling a named template. The result is stored in the supplied outputfile name. If the templateName argument is null then the xsl:iitial-template is used. Parameters supplied using setInitialTemplateParameters are made available to the called template.*  |
-| string | callTemplateReturningString(string $stylesheetFileName, string $templateName) <br> *Invoke a transformation by calling a named template and return result as a string. If the templateName argument is null then the xsl:iitial-template is used. Parameters supplied using setInitialTemplateParameters are made available to the called template.* |
-| PyXdmValue | callTemplateReturningValue(string $stylesheetFileName, string $templateName) <br> *Invoke a transformation by calling a named template and return result as an XdmValue. If the templateName argument is null then the xsl:iitial-template is used. Parameters supplied using setInitialTemplateParameters are made available to the called template.* |
+| void | callTemplateReturningFile(string $stylesheetFileName, string $templateName, string outputfileName) <br> *Invoke a transformation by calling a named template. The result is stored in the supplied outputfile name. If the templateName argument is nullptr then the xsl:iitial-template is used. Parameters supplied using setInitialTemplateParameters are made available to the called template.*  |
+| string | callTemplateReturningString(string $stylesheetFileName, string $templateName) <br> *Invoke a transformation by calling a named template and return result as a string. If the templateName argument is nullptr then the xsl:iitial-template is used. Parameters supplied using setInitialTemplateParameters are made available to the called template.* |
+| PyXdmValue | callTemplateReturningValue(string $stylesheetFileName, string $templateName) <br> *Invoke a transformation by calling a named template and return result as an XdmValue. If the templateName argument is nullptr then the xsl:iitial-template is used. Parameters supplied using setInitialTemplateParameters are made available to the called template.* |
 | void | transformFileToFile(string $sourceFileName, string $stylesheetFileName, string outputfileName) <br> *Perform a one shot transformation. The result is stored in the supplied outputfile name.*  |
 | XdmValue | transformFileToValue(string $fileName) <br> *Perform a one shot transformation. The result is returned as an XdmValue* |
 | XdmValue | transformFileToString(string $fileName) <br> *Perform a one shot transformation. The result is returned as a stringe* |
 | void | transformToFile() <br> *Perform the transformation based upon cached stylesheet and source document. Result is saved to the supplied file name* |
 | string | transformToString() <br> *Perform the transformation based upon cached stylesheet and source document. Result is returned as a serialized string* |
-| PyXdmValue | transformToValue() <br> *Perform the transformation based upon cached stylesheet and any source document. Result returned as an XdmValue object. If there are failures then a null is returned* |
+| PyXdmValue | transformToValue() <br> *Perform the transformation based upon cached stylesheet and any source document. Result returned as an XdmValue object. If there are failures then a nullptr is returned* |
 | void | setInitialTemplateParameters(array parameters, bool tunnel) <br> *Set parameters to be passed to the initial template. These are used whether the transformation is invoked by applying templates to an initial source item, or by invoking a named template. The parameters in question are the xsl:param elements appearing as children of the xsl:template element. The tunnel argument if set to true these values are to be used for setting tunnel parameters.* |
 | void | setInitialMatchSelection() <br> *The initial value to which templates are to be applied (equivalent to the 'select' attribute of xsl:apply-templates)*|
 | void | setInitialMatchSelectionAsFile <br> *The initial filename to which templates are to be applied (equivalent to the 'select' attribute of xsl:apply-templates) * |
@@ -526,8 +526,8 @@ The methods on these class are given below. For a more comprehensive description
 
 |  |  |
 | ----: | :---- |
-| XdmValue | runQueryToValue() <br> *compile and evaluate the query. Result returned as an XdmValue object. If there are failures then a null is returned* |
-| string | runQueryToString() <br> *compile and evaluate the query. Result returned as string. If there are failures then a null is returned* |
+| XdmValue | runQueryToValue() <br> *compile and evaluate the query. Result returned as an XdmValue object. If there are failures then a nullptr is returned* |
+| string | runQueryToString() <br> *compile and evaluate the query. Result returned as string. If there are failures then a nullptr is returned* |
 | void | runQueryToFile(string $outfilename) <br> *compile and evaluate the query. Save the result to file* |
 | void | setQueryContent(string $str) <br> *query supplied as a string* |
 | void | setQueryItem(XdmItem $item) <br> ** |
@@ -576,9 +576,9 @@ The methods on these class are given below. For a more comprehensive description
 | void | registerSchemaFromFile(string $fileName) <br> *Register the Schema which is given as file name.* |
 | void | registerSchemaFromString(string $schemaStr) <br> *Register the Schema which is given as a string representation.* |
 | void | validate() <br> *Validate an instance document supplied as a Source object. Assume source document has already been supplied through accessor methods* | 
-| void | validate(string $fileName) <br> *Validate an instance document supplied as a Source object. $filename - The name of the file to be validated. $filename can be null* |
+| void | validate(string $fileName) <br> *Validate an instance document supplied as a Source object. $filename - The name of the file to be validated. $filename can be nullptr* |
 | XdmNode | validateToNode() <br> *Validate an instance document supplied as a Source object with the validated document returned to the calling program. Assume source document has already been supplied through accessor methods* |
-| XdmNode | validateToNode(string $fileName) <br> *Validate an instance document supplied as a Source object with the validated document returned to the calling program. $filename - The name of the file to be validated. $filename can be null* |
+| XdmNode | validateToNode(string $fileName) <br> *Validate an instance document supplied as a Source object with the validated document returned to the calling program. $filename - The name of the file to be validated. $filename can be nullptr* |
 | XdmNode | getValidationReport <br> *Get the valdiation report produced after valdiating the soucre document. The reporting feature is switched on via setting the property on the SchemaValidator: validator.setProperty('report', 'true'). Return XdmNode* |
 | void | setParameter(string $name, XdmValue $value) <br> *Set the parameters required for XQuery Processor* |
 | void | setProperty(string $name, string $value) <br> *Set properties for Schema Validator.* |
@@ -607,8 +607,8 @@ The methods on these class are given below. For a more comprehensive description
 | string | getStringValue() <br> *Get the string value of the item. For a node, this gets the string value of the node. For an atomic value, it has the same effect as casting the value to a string. In all cases the result is the same as applying the XPath string() function.* |
 | boolean |  isNode() <br> *Determine whether the item is a node value or not.* |
 | boolean |  isAtomic() <br> *Determine whether the item is an atomic value or not.* |
-|  XdmAtomicValue| getAtomicValue() <br> *Provided the item is an atomic value we return the XdmAtomicValue otherwise return null* |
-| XdmNode |  getNodeValue() <br> *Provided the item is a node value we return the XdmNode otherwise return null* |
+|  XdmAtomicValue| getAtomicValue() <br> *Provided the item is an atomic value we return the XdmAtomicValue otherwise return nullptr* |
+| XdmNode |  getNodeValue() <br> *Provided the item is a node value we return the XdmNode otherwise return nullptr* |
 
 #### Saxon\\XdmNode class ####
 <sup>PHP API</sup>
@@ -621,10 +621,10 @@ The methods on these class are given below. For a more comprehensive description
 | boolean | isAtomic() <br> *Determine whether the item is an atomic value or a node. This method will return FALSE as the item is not atomic* |
 | int | getChildCount() <br> *Get the count of child node at this current node* |
 | int | getAttributeCount() <br> *Get the count of  attribute nodes at this node* |
-| XdmNode | getChildNode(int index) <br> *Get the n'th child node at this node. If the child node selected does not exist then return null* |
-| XdmNode | getParent() <br> *Get the parent of this node. If parent node does not exist then return null* |
-| XdmNode | getAttributeNode(int $index) <br> *Get the n'th attribute node at this node. If the attribute node selected does not exist then return null* |
-| string | getAttributeValue(int $index) <br> *Get the n'th attribute node value at this node. If the attribute node selected does not exist then return null* |
+| XdmNode | getChildNode(int index) <br> *Get the n'th child node at this node. If the child node selected does not exist then return nullptr* |
+| XdmNode | getParent() <br> *Get the parent of this node. If parent node does not exist then return nullptr* |
+| XdmNode | getAttributeNode(int $index) <br> *Get the n'th attribute node at this node. If the attribute node selected does not exist then return nullptr* |
+| string | getAttributeValue(int $index) <br> *Get the n'th attribute node value at this node. If the attribute node selected does not exist then return nullptr* |
 
 #### Saxon\\XdmAtomicValue class ####
 <sup>PHP API</sup>
@@ -691,11 +691,11 @@ Example of the old styled PHP API designed for older XSLT API:
         $xsltProc->setSourceFromFile($xmlfile);
         $xsltProc->compileFromFile($xslFile);      
         $result = $xsltProc->transformToString();               
-		if($result != null) {               
+		if($result != nullptr) {
 		  echo '<b>exampleSimple1:</b><br/>';
 		  echo 'Output:'.$result;
 		} else {
-			echo "Result is null";
+			echo "Result is nullptr";
 		}
 		$xsltProc->clearParameters();
 		$xsltProc->clearProperties(); 
@@ -716,7 +716,7 @@ In the example below we show how to debug if something unexpected is happening. 
                 
             $result = $xsltProc->transformToString();
                 
-            if($result == NULL) {
+            if($result == nullptr) {
                     $errCount = $xsltProc->getExceptionCount();
 				    if($errCount > 0 ){ 
 				        for($i = 0; $i < $errCount; $i++) {

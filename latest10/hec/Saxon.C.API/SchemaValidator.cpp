@@ -17,8 +17,8 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 	 */
 	cppClass = lookForClass(SaxonProcessor::sxn_environ->env,
 			"net/sf/saxon/option/cpp/SchemaValidatorForCpp");
-	if ((proc->proc) == NULL) {
-		std::cerr << "Processor is NULL" << std::endl;
+	if ((proc->proc) == nullptr) {
+		std::cerr << "Processor is nullptr" << std::endl;
 	}
 
 	cppV = createSaxonProcessor2(SaxonProcessor::sxn_environ->env, cppClass,
@@ -40,7 +40,7 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 }
 
    void SchemaValidator::setcwd(const char* dir){
-	if(dir==NULL) {
+	if(dir==nullptr) {
     		cwdV = std::string(dir);
 	}
    }
@@ -66,12 +66,12 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 		}
 		exception = proc->checkAndCreateException(cppClass);
 	}
-	return NULL;
+	return nullptr;
 }
 
   void SchemaValidator::registerSchemaFromFile(const char * sourceFile){
-	if (sourceFile == NULL) {
-		std::cerr << "Error:: sourceFile string cannot be empty or NULL" << std::endl;
+	if (sourceFile == nullptr) {
+		std::cerr << "Error:: sourceFile string cannot be empty or nullptr" << std::endl;
 	     return;
         }
 	
@@ -82,8 +82,8 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 		std::cerr << "Error: libsaxon." << "validate" << " not found\n"
 			<< std::endl;
 	} else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -109,14 +109,14 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 				std::string s1 = typeid(iter->second).name();
 				std::cerr<<"Type of itr:"<<s1<<std::endl;
 				jobject xx = (iter->second)->getUnderlyingValue();
-				if(xx == NULL) {
+				if(xx == nullptr) {
 					std::cerr<<"value failed"<<std::endl;
 				} else {
 
 					std::cerr<<"Type of value:"<<(typeid(xx).name())<<std::endl;
 				}
-				if((iter->second)->getUnderlyingValue() == NULL) {
-					std::cerr<<"(iter->second)->getUnderlyingValue() is NULL"<<std::endl;
+				if((iter->second)->getUnderlyingValue() == nullptr) {
+					std::cerr<<"(iter->second)->getUnderlyingValue() is nullptr"<<std::endl;
 				}
 #endif
 		}
@@ -145,8 +145,8 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
  }
 
  void SchemaValidator::exportSchema(const char * fileName) {
-      if (fileName == NULL) {
-      		std::cerr << "Error:: fileName string cannot be empty or NULL" << std::endl;
+      if (fileName == nullptr) {
+      		std::cerr << "Error:: fileName string cannot be empty or nullptr" << std::endl;
       	     return;
               }
 
@@ -171,10 +171,10 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
  }
 
   void SchemaValidator::registerSchemaFromString(const char * sourceStr){
-	setProperty("resources", proc->getResourcesDirectory());
+
 	
-	if (sourceStr == NULL) {
-		std::cerr << "Error:: Schema string cannot be empty or NULL" << std::endl;
+	if (sourceStr == nullptr) {
+		std::cerr << "Error:: Schema string cannot be empty or nullptr" << std::endl;
 	     return;
         }
 	jmethodID mID =
@@ -185,8 +185,8 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 		std::cerr << "Error: libsaxon." << "registerSchemaString" << " not found\n"
 			<< std::endl;
 	} else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -213,14 +213,14 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 				std::string s1 = typeid(iter->second).name();
 				std::cerr<<"Type of itr:"<<s1<<std::endl;
 				jobject xx = (iter->second)->getUnderlyingValue();
-				if(xx == NULL) {
+				if(xx == nullptr) {
 					std::cerr<<"value failed"<<std::endl;
 				} else {
 
 					std::cerr<<"Type of value:"<<(typeid(xx).name())<<std::endl;
 				}
-				if((iter->second)->getUnderlyingValue() == NULL) {
-					std::cerr<<"(iter->second)->getUnderlyingValue() is NULL"<<std::endl;
+				if((iter->second)->getUnderlyingValue() == nullptr) {
+					std::cerr<<"(iter->second)->getUnderlyingValue() is nullptr"<<std::endl;
 				}
 #endif
 		}
@@ -236,7 +236,7 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 	
 			SaxonProcessor::sxn_environ->env->CallVoidMethod(cppV, mID,
 					SaxonProcessor::sxn_environ->env->NewStringUTF(cwdV.c_str()),
-					(sourceStr != NULL ? SaxonProcessor::sxn_environ->env->NewStringUTF(sourceStr) : NULL), NULL, stringArray, objectArray);
+					(sourceStr != nullptr ? SaxonProcessor::sxn_environ->env->NewStringUTF(sourceStr) : nullptr), nullptr, stringArray, objectArray);
 
 	if (size > 0) {
 		SaxonProcessor::sxn_environ->env->DeleteLocalRef(stringArray);
@@ -249,11 +249,11 @@ SchemaValidator::SchemaValidator(SaxonProcessor* p, std::string curr){
 }
 
   void SchemaValidator::validate(const char * sourceFile){
-	/*if (sourceFile == NULL) {
-		std::cerr << "Error:: sourceFile string cannot be empty or NULL" << std::endl;
+	/*if (sourceFile == nullptr) {
+		std::cerr << "Error:: sourceFile string cannot be empty or nullptr" << std::endl;
 	     return;
         }*/
-setProperty("resources", proc->getResourcesDirectory());
+
 jmethodID mID =
 		(jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(cppClass, "validate",
 				"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/Object;)V");
@@ -262,8 +262,8 @@ if (!mID) {
 			<< std::endl;
 
 } else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -300,14 +300,14 @@ if (!mID) {
 				std::string s1 = typeid(iter->second).name();
 				std::cerr<<"param-name:"<<(iter->first)<<",  "<<"Type of itr:"<<s1<<std::endl;
 				jobject xx = (iter->second)->getUnderlyingValue();
-				if(xx == NULL) {
+				if(xx == nullptr) {
 					std::cerr<<"value failed"<<std::endl;
 				} else {
 
 					std::cerr<<"Type of value:"<<(typeid(xx).name())<<std::endl;
 				}
-				if((iter->second)->getUnderlyingValue() == NULL) {
-					std::cerr<<"(iter->second)->getUnderlyingValue() is NULL"<<std::endl;
+				if((iter->second)->getUnderlyingValue() == nullptr) {
+					std::cerr<<"(iter->second)->getUnderlyingValue() is nullptr"<<std::endl;
 				}
 #endif
 		}
@@ -323,7 +323,7 @@ if (!mID) {
 	
 			SaxonProcessor::sxn_environ->env->CallVoidMethod(cppV, mID,
 					SaxonProcessor::sxn_environ->env->NewStringUTF(cwdV.c_str()), 
-					(sourceFile != NULL ? SaxonProcessor::sxn_environ->env->NewStringUTF(sourceFile) : NULL), (outputFile.empty() ? NULL : outputFile.c_str() ), stringArray, objectArray);
+					(sourceFile != nullptr ? SaxonProcessor::sxn_environ->env->NewStringUTF(sourceFile) : nullptr), (outputFile.empty() ? nullptr : outputFile.c_str() ), stringArray, objectArray);
 
 	if (size > 0) {
 		SaxonProcessor::sxn_environ->env->DeleteLocalRef(stringArray);
@@ -335,11 +335,11 @@ if (!mID) {
 }
    
 XdmNode * SchemaValidator::validateToNode(const char * sourceFile){
-	/*if (sourceFile == NULL) {
-		std::cerr << "Error:: source file string cannot be empty or NULL" << std::endl;
-	     return NULL;
+	/*if (sourceFile == nullptr) {
+		std::cerr << "Error:: source file string cannot be empty or nullptr" << std::endl;
+	     return nullptr;
         }*/
-setProperty("resources", proc->getResourcesDirectory());
+
 jmethodID mID =
 		(jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(cppClass, "validateToNode",
 				"(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/Object;)Lnet/sf/saxon/s9api/XdmNode;");
@@ -348,8 +348,8 @@ if (!mID) {
 			<< std::endl;
 
 } else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -375,14 +375,14 @@ if (!mID) {
 				std::string s1 = typeid(iter->second).name();
 				std::cerr<<"Type of itr:"<<s1<<std::endl;
 				jobject xx = (iter->second)->getUnderlyingValue();
-				if(xx == NULL) {
+				if(xx == nullptr) {
 					std::cerr<<"value failed"<<std::endl;
 				} else {
 
 					std::cerr<<"Type of value:"<<(typeid(xx).name())<<std::endl;
 				}
-				if((iter->second)->getUnderlyingValue() == NULL) {
-					std::cerr<<"(iter->second)->getUnderlyingValue() is NULL"<<std::endl;
+				if((iter->second)->getUnderlyingValue() == nullptr) {
+					std::cerr<<"(iter->second)->getUnderlyingValue() is nullptr"<<std::endl;
 				}
 #endif
 		}
@@ -397,7 +397,7 @@ if (!mID) {
 	jobject result = (jobject)(
 			SaxonProcessor::sxn_environ->env->CallObjectMethod(cppV, mID,
 					SaxonProcessor::sxn_environ->env->NewStringUTF(cwdV.c_str()),
-					(sourceFile != NULL ? SaxonProcessor::sxn_environ->env->NewStringUTF(sourceFile) : NULL), stringArray, objectArray));
+					(sourceFile != nullptr ? SaxonProcessor::sxn_environ->env->NewStringUTF(sourceFile) : nullptr), stringArray, objectArray));
 	if (size > 0) {
 		SaxonProcessor::sxn_environ->env->DeleteLocalRef(stringArray);
 		SaxonProcessor::sxn_environ->env->DeleteLocalRef(objectArray);
@@ -411,29 +411,29 @@ if (!mID) {
 	exception = proc->checkAndCreateException(cppClass);
 
 }
-	return NULL;
+	return nullptr;
 }
 
 void SchemaValidator::exceptionClear(){
- if(exception != NULL) {
+ if(exception != nullptr) {
  	delete exception;
- 	exception = NULL;
+ 	exception = nullptr;
  }
    SaxonProcessor::sxn_environ->env->ExceptionClear();
  }
 
 /*const char * SchemaValidator::getErrorCode(int i) {
-	if(proc->exception == NULL) {return NULL;}
+	if(proc->exception == nullptr) {return nullptr;}
 	return proc->exception->getErrorCode(i);
 }
 
 const char * SchemaValidator::getErrorMessage(int i ){
- if(proc->exception == NULL) {return NULL;}
+ if(proc->exception == nullptr) {return nullptr;}
  return proc->exception->getErrorMessage(i);
  } */
 
 bool SchemaValidator::exceptionOccurred() {
-	return proc->exceptionOccurred() || exception != NULL;
+	return proc->exceptionOccurred() || exception != nullptr;
 }
 
 const char* SchemaValidator::checkException() {
@@ -441,14 +441,14 @@ const char* SchemaValidator::checkException() {
 }
 
 /*int SchemaValidator::exceptionCount(){
- if(proc->exception != NULL){
+ if(proc->exception != nullptr){
  return proc->exception->count();
  }
  return 0;
  }   */
 
 void SchemaValidator::setSourceNode(XdmNode * value) {
-    if(value != NULL){
+    if(value != nullptr){
       value->incrementRefCount();
       parameters["node"] = (XdmValue *)value;
     }
@@ -457,7 +457,7 @@ void SchemaValidator::setSourceNode(XdmNode * value) {
 }
 
 void SchemaValidator::setParameter(const char * name, XdmValue*value) {
-	if(value != NULL){
+	if(value != nullptr){
 		value->incrementRefCount();
 		parameters["param:"+std::string(name)] = value;
 	}
@@ -469,11 +469,11 @@ bool SchemaValidator::removeParameter(const char * name) {
 
 void SchemaValidator::setProperty(const char * name, const char * value) {
 #ifdef DEBUG	
-	if(value == NULL) {
-		std::cerr<<"Validator setProperty is NULL"<<std::endl;
+	if(value == nullptr) {
+		std::cerr<<"Validator setProperty is nullptr"<<std::endl;
 	}
 #endif
-	properties.insert(std::pair<std::string, std::string>(std::string(name), std::string((value== NULL ? "" : value))));
+	properties.insert(std::pair<std::string, std::string>(std::string(name), std::string((value== nullptr ? "" : value))));
 }
 
 void SchemaValidator::clearParameters(bool delVal) {
@@ -484,7 +484,7 @@ void SchemaValidator::clearParameters(bool delVal) {
 #ifdef DEBUG
 			std::cout<<"SchemaValidator.clearParameter() - XdmValue refCount="<<value->getRefCount()<<std::endl;
 #endif
-			if(value != NULL && value->getRefCount() < 1){		
+			if(value != nullptr && value->getRefCount() < 1){
 	        		delete value;
 			}
         	}

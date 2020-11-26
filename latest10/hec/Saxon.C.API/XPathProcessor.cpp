@@ -17,8 +17,8 @@ XPathProcessor::XPathProcessor(SaxonProcessor* p, std::string curr) {
 	 */
 	cppClass = lookForClass(SaxonProcessor::sxn_environ->env,
 			"net/sf/saxon/option/cpp/XPathProcessor");
-	if ((proc->proc) == NULL) {
-		std::cerr << "Processor is NULL" << std::endl;
+	if ((proc->proc) == nullptr) {
+		std::cerr << "Processor is nullptr" << std::endl;
 	}
 
 	cppXP = createSaxonProcessor2(SaxonProcessor::sxn_environ->env, cppClass,
@@ -31,7 +31,7 @@ XPathProcessor::XPathProcessor(SaxonProcessor* p, std::string curr) {
 	SaxonProcessor::sxn_environ->env->CallStaticVoidMethod(cppClass, debugMID, (jboolean)true);
 #endif    
 
-	exception = NULL;
+	exception = nullptr;
 	if(!(proc->cwd.empty()) && curr.empty()){
 		cwdXP = proc->cwd;
 	} else {
@@ -41,11 +41,11 @@ XPathProcessor::XPathProcessor(SaxonProcessor* p, std::string curr) {
 }
 
 XdmValue * XPathProcessor::evaluate(const char * xpathStr) {
-	if (xpathStr == NULL) {
-		std::cerr << "Error:: XPath string cannot be empty or NULL" << std::endl;
-	return NULL;
+	if (xpathStr == nullptr) {
+		std::cerr << "Error:: XPath string cannot be empty or nullptr" << std::endl;
+	return nullptr;
 }
-setProperty("resources", proc->getResourcesDirectory());
+
 jmethodID mID =
 		(jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(cppClass, "evaluate",
 				"(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/Object;)[Lnet/sf/saxon/s9api/XdmValue;");
@@ -54,8 +54,8 @@ if (!mID) {
 			<< std::endl;
 
 } else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -88,7 +88,7 @@ if (!mID) {
 					SaxonProcessor::sxn_environ->env->NewStringUTF(xpathStr), stringArray, objectArray));
 	if(!results) {
 		exception = proc->checkAndCreateException(cppClass);
-		return NULL;
+		return nullptr;
 	}
 	
 	int sizex = SaxonProcessor::sxn_environ->env->GetArrayLength(results);
@@ -102,7 +102,7 @@ if (!mID) {
 		jclass functionItemClass = lookForClass(SaxonProcessor::sxn_environ->env, "net/sf/saxon/s9api/XdmFunctionItem");
 
 		XdmValue * value = new XdmValue();
-		XdmItem * xdmItem = NULL;
+		XdmItem * xdmItem = nullptr;
 		for (int p=0; p < sizex; ++p) 
 		{
 			jobject resulti = SaxonProcessor::sxn_environ->env->GetObjectArrayElement(results, p);
@@ -132,16 +132,16 @@ if (!mID) {
 		return value;
 	}
 }
-return NULL;
+return nullptr;
 
 }
 
 XdmItem * XPathProcessor::evaluateSingle(const char * xpathStr) {
-	if (xpathStr == NULL) {
-		std::cerr << "Error:: XPath string cannot be empty or NULL" << std::endl;
-	     return NULL;
+	if (xpathStr == nullptr) {
+		std::cerr << "Error:: XPath string cannot be empty or nullptr" << std::endl;
+	     return nullptr;
         }
-setProperty("resources", proc->getResourcesDirectory());
+
 jmethodID mID =
 		(jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(cppClass, "evaluateSingle",
 				"(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/Object;)Lnet/sf/saxon/s9api/XdmItem;");
@@ -150,8 +150,8 @@ if (!mID) {
 			<< std::endl;
 
 } else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -177,14 +177,14 @@ if (!mID) {
 				std::string s1 = typeid(iter->second).name();
 				std::cerr<<"Type of itr:"<<s1<<std::endl;
 				jobject xx = (iter->second)->getUnderlyingValue();
-				if(xx == NULL) {
+				if(xx == nullptr) {
 					std::cerr<<"value failed"<<std::endl;
 				} else {
 
 					std::cerr<<"Type of value:"<<(typeid(xx).name())<<std::endl;
 				}
-				if((iter->second)->getUnderlyingValue() == NULL) {
-					std::cerr<<"(iter->second)->getUnderlyingValue() is NULL"<<std::endl;
+				if((iter->second)->getUnderlyingValue() == nullptr) {
+					std::cerr<<"(iter->second)->getUnderlyingValue() is nullptr"<<std::endl;
 				}
 #endif
 		}
@@ -208,7 +208,7 @@ if (!mID) {
 		jclass atomicValueClass = lookForClass(SaxonProcessor::sxn_environ->env, "net/sf/saxon/s9api/XdmAtomicValue");
 		jclass nodeClass = lookForClass(SaxonProcessor::sxn_environ->env, "net/sf/saxon/s9api/XdmNode");
 		jclass functionItemClass = lookForClass(SaxonProcessor::sxn_environ->env, "net/sf/saxon/s9api/XdmFunctionItem");
-		XdmItem * xdmItem = NULL;
+		XdmItem * xdmItem = nullptr;
 		if(SaxonProcessor::sxn_environ->env->IsInstanceOf(result, atomicValueClass)           == JNI_TRUE) {
 			xdmItem = new XdmAtomicValue(result);
 
@@ -217,7 +217,7 @@ if (!mID) {
 			xdmItem = new XdmNode(result);
 
 		} else if (SaxonProcessor::sxn_environ->env->IsInstanceOf(result, functionItemClass)           == JNI_TRUE) {
-			return NULL;
+			return nullptr;
 		}
 		xdmItem->setProcessor(proc);
 		//SaxonProcessor::sxn_environ->env->DeleteLocalRef(result);
@@ -228,26 +228,26 @@ if (!mID) {
      		}
 }
 
-return NULL;
+return nullptr;
 
 }
 
 void XPathProcessor::setContextItem(XdmItem * item) {
 	contextItem = item;
-    	if(item != NULL){
+    	if(item != nullptr){
      	 parameters["node"] = (XdmValue *)item;
     	}
 }
 
 void XPathProcessor::setContextFile(const char * filename) {
-	if (filename != NULL) {
+	if (filename != nullptr) {
 		setProperty("s", filename);
 	}
 }
 
 
 void XPathProcessor::declareNamespace(const char *prefix, const char * uri){
-        if (prefix == NULL || uri == NULL) {
+        if (prefix == nullptr || uri == nullptr) {
 		return;
         }
 	jmethodID mID =
@@ -287,7 +287,7 @@ void XPathProcessor::setCaching(bool caching){
 }
 
 void XPathProcessor::importSchemaNamespace(const char* uri){
-      if (uri != NULL) {
+      if (uri != nullptr) {
        		setProperty("importSN", uri);
       }
 }
@@ -297,11 +297,11 @@ void XPathProcessor::importSchemaNamespace(const char* uri){
 
 
 void XPathProcessor::setBaseURI(const char * uriStr) {
-	if (uriStr == NULL) {
-		std::cerr << "Error:: XPath string cannot be empty or NULL" << std::endl;
+	if (uriStr == nullptr) {
+		std::cerr << "Error:: XPath string cannot be empty or nullptr" << std::endl;
 	     return;
         }
-setProperty("resources", proc->getResourcesDirectory());
+
 jmethodID mID =
 		(jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(cppClass, "setBaseURI",
 				"(Ljava/lang/String;)V");
@@ -318,11 +318,11 @@ if (!mID) {
 }
 
 bool XPathProcessor::effectiveBooleanValue(const char * xpathStr) {
-	if (xpathStr == NULL) {
-		std::cerr << "Error:: XPath string cannot be empty or NULL" << std::endl;
+	if (xpathStr == nullptr) {
+		std::cerr << "Error:: XPath string cannot be empty or nullptr" << std::endl;
 	     return false;
         }
-setProperty("resources", proc->getResourcesDirectory());
+
 jmethodID mID =
 		(jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(cppClass, "effectiveBooleanValue",
 				"(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/Object;)Z");
@@ -330,8 +330,8 @@ if (!mID) {
 	std::cerr << "Error: MyClassInDll." << "effectiveBooleanValue" << " not found\n"<< std::endl;
 
 } else {
-	jobjectArray stringArray = NULL;
-	jobjectArray objectArray = NULL;
+	jobjectArray stringArray = nullptr;
+	jobjectArray objectArray = nullptr;
 	jclass objectClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/Object");
 	jclass stringClass = lookForClass(SaxonProcessor::sxn_environ->env, "java/lang/String");
 
@@ -372,7 +372,7 @@ return false;
 }
 
 void XPathProcessor::setParameter(const char * name, XdmValue* value) {
-	if(value != NULL){
+	if(value != nullptr){
 		value->incrementRefCount();
 		int s = parameters.size();
 		std::string skey = "param:"+std::string(name);
@@ -383,7 +383,7 @@ void XPathProcessor::setParameter(const char * name, XdmValue* value) {
             if (it != parameters.end()) {
                 XdmValue * valuei = it->second;
                 valuei->decrementRefCount();
-                if(valuei != NULL && valuei->getRefCount() < 1){
+                if(valuei != nullptr && valuei->getRefCount() < 1){
                     delete value;
                 }
                 parameters.erase(skey);
@@ -398,17 +398,17 @@ bool XPathProcessor::removeParameter(const char * name) {
 }
 
 void XPathProcessor::setProperty(const char * name, const char * value) {
-	if(name != NULL) {
+	if(name != nullptr) {
 	    int s = properties.size();
 		std::string skey = std::string(name);
-		properties.insert(std::pair<std::string, std::string>(skey, std::string((value == NULL ? "" : value))));
+		properties.insert(std::pair<std::string, std::string>(skey, std::string((value == nullptr ? "" : value))));
 
 		if(s == properties.size()) {
             std::map<std::string, std::string>::iterator it;
             it = properties.find(skey);
             if (it != properties.end()) {
                 properties.erase(skey);
-                properties[skey] = std::string((value == NULL ? "" : value));
+                properties[skey] = std::string((value == nullptr ? "" : value));
             }
 		}
 	}
@@ -422,7 +422,7 @@ void XPathProcessor::clearParameters(bool delVal) {
 #ifdef DEBUG
 			std::cerr<<"XPathProc.clearParameter() - XdmValue refCount="<<value->getRefCount()<<std::endl;
 #endif
-			if(value != NULL && value->getRefCount() < 1){		
+			if(value != nullptr && value->getRefCount() < 1){
 	        		delete value;
 			}
         	}
@@ -450,9 +450,9 @@ std::map<std::string,std::string>& XPathProcessor::getProperties(){
 }
 
 void XPathProcessor::exceptionClear(){
-	if(exception != NULL) {
+	if(exception != nullptr) {
 		delete proc->exception;
-		exception = NULL;
+		exception = nullptr;
 	}
 
    SaxonProcessor::sxn_environ->env->ExceptionClear();
@@ -460,12 +460,12 @@ void XPathProcessor::exceptionClear(){
 }
 
 const char * XPathProcessor::getErrorCode() {
-	if(exception == NULL) {return NULL;}
+	if(exception == nullptr) {return nullptr;}
 	return exception->getErrorCode();
 }
 
 const char * XPathProcessor::getErrorMessage(){
-	if(exception == NULL) {return NULL;}
+	if(exception == nullptr) {return nullptr;}
 	return exception->getErrorMessage();
 }
 

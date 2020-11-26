@@ -63,10 +63,11 @@ public:
    XdmValue * evaluate(const char * xpathStr);
    
 
-    //! Compile and evaluate an XPath expression. The result is expected to be a single XdmItem
+    //! Compile and evaluate an XPath expression. The result is expected to be a single XdmItem or nullptr
    /**
      * @param xpathStr - supplied as a character string
-	@return XdmItem
+	@return XdmItem - XdmItem object or nullptr if the expression returns an empty sequence.
+    * If the expression returns a sequence of more than one item, any items after the first are ignored.
    */
    XdmItem * evaluateSingle(const char * xpathStr);
 
@@ -90,7 +91,7 @@ public:
      * Set a parameter value used in the query
      *s
      * @param name  of the parameter, as a string. For namespaced parameter use the JAXP solution i.e. "{uri}name"
-     * @param value of the query parameter, or null to clear a previously set value
+     * @param value of the query parameter, or nullptr to clear a previously set value
      */
     void setParameter(const char * name, XdmValue*value);
 
@@ -121,7 +122,7 @@ public:
      *               in this case the prefix will not be available for use, except in the case where the prefix
      *               is also a zero length string, in which case the absence of a prefix implies that the name
      *               is in no namespace.
-     * Assume the prefix or uri is null.
+     * Assume the prefix or uri is nullptr.
      */
     void declareNamespace(const char *prefix, const char * uri);
 
@@ -228,7 +229,7 @@ public:
 
      //! Check for exception thrown.
 	/**
-	* @return cha*. Returns the exception message if thrown otherwise return NULL
+	* @return cha*. Returns the exception message if thrown otherwise return nullptr
 	*/
     const char* checkException();
 

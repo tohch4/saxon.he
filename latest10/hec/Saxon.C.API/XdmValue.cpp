@@ -30,7 +30,7 @@ const char * XdmValue::toString() {
 		if (!strMID2) {
 			std::cerr << "Error: Saxonc.XdmValue." << "toString"
 				<< " not found\n" << std::endl;
-			return NULL;
+			return nullptr;
 		}
 		else {
 			for(int i=0; i<size();i++) {
@@ -38,7 +38,7 @@ const char * XdmValue::toString() {
 			
 				jstring result = (jstring)(SaxonProcessor::sxn_environ->env->CallObjectMethod(itemAt(i)->getUnderlyingValue(), strMID2));
 				if (result) {
-					toStringValue += SaxonProcessor::sxn_environ->env->GetStringUTFChars(result, NULL);
+					toStringValue += SaxonProcessor::sxn_environ->env->GetStringUTFChars(result, nullptr);
 					SaxonProcessor::sxn_environ->env->DeleteLocalRef(result);
 				
 				}
@@ -69,16 +69,16 @@ XdmValue::XdmValue(jobject val) {
 	values.resize(0);//TODO memory issue might occur here
 	values.push_back(value);
 	xdmSize++;
-	jValues = NULL;
-	valueType = NULL;
+	jValues = nullptr;
+	valueType = nullptr;
 }
 
 
 XdmValue::XdmValue(jobject val, bool arr){
 	xdmSize = 0;
 	values.resize(0);
-	jValues = NULL;
-	valueType = NULL;
+	jValues = nullptr;
+	valueType = nullptr;
 	jclass xdmValueForcppClass = lookForClass(SaxonProcessor::sxn_environ->env, "net/sf/saxon/option/cpp/XdmValueForCpp");
 	jmethodID xvfMID = SaxonProcessor::sxn_environ->env->GetStaticMethodID(xdmValueForcppClass, "makeArrayFromXdmValue", "(Lnet/sf/saxon/s9api/XdmValue;)[Lnet/sf/saxon/s9api/XdmItem;");
 
@@ -99,7 +99,7 @@ XdmValue::XdmValue(jobject val, bool arr){
 
 		//XdmValue * value = new XdmValue();
 		//value->setProcessor(proc);
-		XdmItem * xdmItem = NULL;
+		XdmItem * xdmItem = nullptr;
 		for (int p=0; p < sizex; ++p) 
 		{
 			jobject resulti = SaxonProcessor::sxn_environ->env->GetObjectArrayElement(results, p);
@@ -134,7 +134,7 @@ XdmValue::~XdmValue() {
     if(getRefCount()<1){
 	//proc->env->ReleaseObject
 	for (size_t i = 0; i < values.size(); i++) {
-		if (values[i] != NULL && values[i]->getRefCount() < 1) {
+		if (values[i] != nullptr && values[i]->getRefCount() < 1) {
 			delete values[i];
 			safeToClear = true;
 		} else {
@@ -144,8 +144,8 @@ XdmValue::~XdmValue() {
 	if(safeToClear) {
 		values.clear();
 	}
-	if (valueType != NULL) { delete valueType; }
-	if (jValues && proc != NULL) {
+	if (valueType != nullptr) { delete valueType; }
+	if (jValues && proc != nullptr) {
 		SaxonProcessor::sxn_environ->env->DeleteLocalRef(jValues);  //TODO check - this maybe should be DeleteGlobalRef  - check where it is created
 	}
 	xdmSize = 0;
@@ -157,10 +157,10 @@ XdmValue::~XdmValue() {
 }
 
 void XdmValue::addXdmItem(XdmItem* val) {
-	if (val != NULL) {
+	if (val != nullptr) {
 		values.push_back(val);
 		xdmSize++;
-		jValues = NULL; //TODO clear jni array from memory if needed
+		jValues = nullptr; //TODO clear jni array from memory if needed
 	}
 }
 
@@ -170,7 +170,7 @@ void XdmValue::addUnderlyingValue(jobject val) {
 	valuei->setProcessor(proc);
 	values.push_back(valuei);
 	xdmSize++;
-	jValues = NULL; //TODO clear jni array from memory if needed
+	jValues = nullptr; //TODO clear jni array from memory if needed
 
 }
 
@@ -193,17 +193,17 @@ XdmItem * XdmValue::getHead() {
 		return values[0];
 	}
 	else {
-		return NULL;
+		return nullptr;
 	}
 }
 
 jobject XdmValue::getUnderlyingValue() {
-	if (jValues == NULL) {
+	if (jValues == nullptr) {
 		int i;
 		JNIEnv *env = SaxonProcessor::sxn_environ->env;
 		int count = values.size();
 		if (count == 0) {
-			return NULL;
+			return nullptr;
 		}
 		jclass objectClass = lookForClass(env,
 			"net/sf/saxon/s9api/XdmItem");
@@ -226,7 +226,7 @@ XdmItem * XdmValue::itemAt(int n) {
 	if (n >= 0 && (unsigned int)n < values.size()) {
 		return values[n];
 	}
-	return NULL;
+	return nullptr;
 }
 
 /**
