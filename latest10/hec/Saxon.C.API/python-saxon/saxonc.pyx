@@ -3393,7 +3393,29 @@ cdef class PyXdmValue:
         """
         cdef const char* c_string = self.thisvptr.toString()
         ustring = c_string.decode('UTF-8') if c_string is not NULL else None
-        return ustring 
+        return ustring
+
+     def __iter__(self):
+        ''' Returns the Iterator object of PyXdmValue'''
+        return PyXdmValueIterator(self)
+
+cdef class PyXdmValueIterator:
+     ''' Iterator class for the PyXdmValue '''
+     def __init__(self, value):
+     # PyXdmValue object reference
+        self._value = value
+        # member variable to keep track of current index
+       self._index = 0
+   def __next__(self):
+       ''''Returns the next value from PyXdmValue object's lists '''
+       if self._index < self._value.size :
+           result = value.item_at(self._index)
+           self._index +=1
+           return result
+       # End of Iteration
+       raise StopIteration
+
+
 
 cdef class PyXdmItem(PyXdmValue):
      cdef saxoncClasses.XdmItem *derivedptr      # hold a C++ instance which we're wrapping

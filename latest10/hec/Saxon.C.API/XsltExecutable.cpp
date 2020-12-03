@@ -25,6 +25,9 @@ XsltExecutable::XsltExecutable(jobject exObject, std::string curr) {
     cppClass = lookForClass(SaxonProcessor::sxn_environ->env,
                             "net/sf/saxon/option/cpp/Xslt30Processor");
 
+    messageListenerClass = lookForClass(SaxonProcessor::sxn_environ->env,
+                                               "net/sf/saxon/option/cpp/SaxonCMessageListener");
+
 #ifdef DEBUG
     jmethodID debugMID = SaxonProcessor::sxn_environ->env->GetStaticMethodID(cppClass, "setDebugMode", "(Z)V");
     SaxonProcessor::sxn_environ->env->CallStaticVoidMethod(cppClass, debugMID, (jboolean)true);
@@ -33,6 +36,7 @@ XsltExecutable::XsltExecutable(jobject exObject, std::string curr) {
     tunnel = false;
     selection = nullptr;
     selectionV = nullptr;
+    saxonMessageListenerObj = nullptr;
     executableObject = exObject;
     cwdXE = curr;
 }
@@ -926,16 +930,63 @@ void XsltExecutable::transformFileToFile(const char *source, const char *outputf
 }
 
 
-void XsltExecutable::setupXslMessage(bool show, const char * filename) {
-    if (show) {
+void XsltExecutable::setupXslMessage(bool create, const char * filename) {
+    if (create) {
+
+        static jmethodID messageID =   (jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(messageListenerClass,
+                                                                                    "<init>",
+                                                                                    "(Ljava/lang/String;Ljava/lang/String;)V");
+        if (!messageID) {
+            std::cerr << "Error: "<<"SaxonCMessageListener" << " in " <<getDllname() << " not found\n"
+                      << std::endl;
+
+        }
+
         if (filename == nullptr) {
-            setProperty("m", "on");
+            saxonMessageListenerObj = (jobject)SaxonProcessor::sxn_environ->env->NewObject(messageListenerClass, messageID,
+                                                                                           SaxonProcessor::sxn_environ->env->NewStringUTF("-:on"));
+            //setProperty("m", "on");
         } else {
-            setProperty("m", filename);
+            saxonMessageListenerObj = (jobject)SaxonProcessor::sxn_environ->env->NewObject(messageListenerClass, messageID,
+                                                                                           SaxonProcessor::sxn_environ->env->NewStringUTF(filename));
         }
     } else {
         setProperty("m", "off");
     }
+
+
+}
+
+XdmValue * XsltExecutable::getXslMessages(){
+
+    if(saxonMessageListenerObj) {
+        static jmethodID getmessageID = (jmethodID) SaxonProcessor::sxn_environ->env->GetMethodID(messageListenerClass,
+                                                                                                  "getXslMessages",
+                                                                                                  "()[Lnet/sf/saxon/s9api/XdmNode;");
+        if (!getmessageID) {
+            std::cerr << "Error: " << getDllname() << ".getXslMessages" << " not found\n"
+                      << std::endl;
+
+        } else {
+            jobjectArray results = (jobjectArray) (
+                    SaxonProcessor::sxn_environ->env->CallObjectMethod(saxonMessageListenerObj, getmessageID));
+            int sizex = SaxonProcessor::sxn_environ->env->GetArrayLength(results);
+
+            if (sizex > 0) {
+                XdmValue *value = new XdmValue();
+
+                for (int p = 0; p < sizex; ++p) {
+                    jobject resulti = SaxonProcessor::sxn_environ->env->GetObjectArrayElement(results, p);
+                    value->addUnderlyingValue(resulti);
+                }
+                SaxonProcessor::sxn_environ->env->DeleteLocalRef(results);
+                return value;
+            }
+        }
+    }
+    return NULL;
+
+
 }
 
 

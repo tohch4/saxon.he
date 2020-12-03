@@ -244,6 +244,14 @@ public:
     void setupXslMessage(bool show, const char* filename=nullptr);
 
 
+
+    /**
+    * Get the messages written using the <code>xsl:message</code> instruction
+    * @return XdmValue - Messages returned as a sequence of XdmNode objects within an XdmValue object.
+    */
+    XdmValue * getXslMessages();
+
+
     /**
      * Produce a representation of the compiled stylesheet, in XML form, suitable for
      * distribution and reloading. If the configuration under which the export takes place
@@ -470,7 +478,8 @@ private:
 
 
     jclass  cppClass;
-	jobject executableObject, selection;
+    jclass messageListenerClass;
+	jobject executableObject, selection, saxonMessageListenerObj;
 	XdmValue * selectionV;
     std::string cwdXE; /*!< current working directory */
 	bool tunnel, jitCompilation;

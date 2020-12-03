@@ -863,6 +863,47 @@ def test_evaluate():
     value = xp.evaluate('//person')
     assert isinstance(value, PyXdmValue)
     assert value.size == 3
+
+
+def test_xdm_value_iter():
+    xml = """\
+    <out>
+        <person att1='value1' att2='value2'>text1</person>
+        <person>text2</person>
+        <person>text3</person>
+    </out>
+    """
+    sp = PySaxonProcessor()
+    xp = sp.new_xpath_processor()
+
+    node = sp.parse_xml(xml_text=xml)
+    assert isinstance(node, PyXdmNode)
+    xp.set_context(xdm_item=node)
+    value = xp.evaluate('//person')
+    assert value.size == 3
+    for item in value:
+        assert isinstance(item, PyXdmItem)
+
+
+def test_xdm_value_iter2():
+    xml = """\
+    <out>
+        <person att1='value1' att2='value2'>text1</person>
+        <person>text2</person>
+        <person>text3</person>
+    </out>
+    """
+    sp = PySaxonProcessor()
+    xp = sp.new_xpath_processor()
+
+    node = sp.parse_xml(xml_text=xml)
+    assert isinstance(node, PyXdmNode)
+    xp.set_context(xdm_item=node)
+    value = xp.evaluate('//person')
+    assert value.size == 3
+    for item in value:
+        assert 'test.' in item__str__()
+
     
 
 def test_single():
@@ -894,7 +935,7 @@ def test_declare_variable_value(saxonproc):
     result = xpath_processor.evaluate('$s1')
 
     assert result is not None
-    assert'test.' in result.head.string_value
+    assert 'test.' in result.head.string_value
 
 
 def test_declare_variable_value2(saxonproc):

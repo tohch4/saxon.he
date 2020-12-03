@@ -193,6 +193,60 @@ final class XSLT30Test extends TestCase
 
     }
 
+    public function testTransformWithoutArgument1(): void
+    {
+
+        $transformer = self::$saxonProc->newXslt30Processor();
+
+
+        $foo_xml = "trax/xml/foo.xml";
+        $transformer->compileFromAssociatedFile($foo_xml);
+        $transformer->setInitialMatchSelectionAsFile($foo_xml);
+        $result = $transformer->transformToString();
+
+        $this->assertNotNull($result);
+
+    }
+
+    public function testTransformWithoutArgument2(): void
+    {
+
+        $transformer = self::$saxonProc->newXslt30Processor();
+
+
+        $foo_xml = "trax/xml/foo.xml";
+        $transformer->compileFromAssociatedFile($foo_xml);
+        $transformer->setInitialMatchSelectionAsFile($foo_xml);
+        $resultValue = $transformer->transformToValue();
+        $this->assertNotNull($resultValue);
+        $resultItem = $resultValue->getHead();
+        $this->assertNotNull($resultItem);
+        $result = $resultItem->getStringValue();
+        $this->assertNotNull($result);
+
+    }
+
+
+
+    public function testTransformWithoutArgument3(): void
+    {
+
+        $transformer = self::$saxonProc->newXslt30Processor();
+
+
+        $foo_xml = "trax/xml/foo.xml";
+        $transformer->compileFromAssociatedFile($foo_xml);
+        $transformer->setInitialMatchSelectionAsFile($foo_xml);
+        $transformer->setOutputFile("resultForTransformWithoutArgument.xml");
+        $transformer->transformToFile();
+        $this->assertTrue(file_exists("resultForTransformWithoutArgument.xml"));
+
+                if (file_exists("resultForTransformWithoutArgument.xml")) {
+                    unlink("resultForTransformWithoutArgument.xml");
+                }
+
+    }
+
 
     public function testNullStylesheet(): void
     {

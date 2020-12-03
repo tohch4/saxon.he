@@ -436,7 +436,8 @@ public:
 /*
      * Register several native methods for one class.
      * @param libName name of the library which contains the function(s). Loads the library
-     * @param gMethods Register native methods. Default is nullptr, also nullptr allowed in which cause assumption is made the user has added native methods using the method addNativeMethod .
+     * @param gMethods Register native methods. Default is nullptr, also nullptr allowed in
+     which cause assumption is made the user has added native methods using the method addNativeMethod .
  * @return bool success of registered native method
  */
     bool registerCPPFunction(char *libName, JNINativeMethod *gMethods = nullptr) {
