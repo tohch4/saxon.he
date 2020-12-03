@@ -30,8 +30,8 @@ import java.util.Objects;
  */
 public class StandardEntityResolver implements EntityResolver {
 
-    private static HashMap<String, String> publicIds = new HashMap<>(150);
-    private static HashMap<String, String> systemIds = new HashMap<>(250);
+    private static final HashMap<String, String> publicIds = new HashMap<>(30);
+    private static final HashMap<String, String> systemIds = new HashMap<>(30);
 
     public Configuration config;
 
@@ -653,7 +653,7 @@ public class StandardEntityResolver implements EntityResolver {
 
         // If this is a W3C URI, Saxon ought really to have a copy...
         if (systemId.startsWith("http://www.w3.org/") && config.isTiming()) {
-            config.getLogger().warning("Saxon does not have a local copy of PUBLIC " + publicId + " SYSTEM " + systemId);
+            config.getLogger().info("Saxon does not have a local copy of PUBLIC " + publicId + " SYSTEM " + systemId);
         }
 
         try {
@@ -667,7 +667,7 @@ public class StandardEntityResolver implements EntityResolver {
 
         // If it's a classpath URI, handle it here
         if (systemId.startsWith("classpath:") && systemId.length() > 10) {
-            return getResource(systemId.substring(10), config);
+            return fetch(systemId.substring(10), config);
         }
 
         // Otherwise, leave the parser to resolve the URI in the normal way
