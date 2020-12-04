@@ -1835,6 +1835,25 @@ public class PackageLoaderHE implements IPackageLoader {
                               actions.toArray(new Expression[0]));
         });
 
+        eMap.put("coercedFn", (loader, element) -> {
+            ItemType type = loader.parseItemTypeAttribute(element, "type");
+            Expression target = loader.getFirstChildExpression(element);
+            Function targetFn;
+            CoercedFunction coercedFn;
+            if (target instanceof UserFunctionReference) {
+                coercedFn = new CoercedFunction((SpecificFunctionType) type);
+                final CoercedFunction coercedFn2 = coercedFn;
+                final SymbolicName name = ((UserFunctionReference) target).getSymbolicName();
+                loader.completionActions.add(() -> coercedFn2.setTargetFunction(loader.userFunctions.get(name)));
+            } else if (target instanceof FunctionLiteral) {
+                targetFn = (Function) ((Literal) target).getValue();
+                coercedFn = new CoercedFunction(targetFn, (SpecificFunctionType) type);
+            } else {
+                throw new AssertionError();
+            }
+            return Literal.makeLiteral(coercedFn);
+        });
+
         eMap.put("comment", (loader, element) -> {
             Expression select = loader.getFirstChildExpression(element);
             Comment inst = new Comment();
